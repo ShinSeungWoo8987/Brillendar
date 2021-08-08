@@ -1,0 +1,18 @@
+typeorm사용 tsconfig에서
+"experimentalDecorators": true
+"emitDecoratorMetadata": true,
+Preference -> Setting -> implicitProjectConfig.experimentalDecorators 검색
+
+
+* typeorm사용시 빌드 이후 ormconfig를 바꿔주어야한다.
+// development mode
+"entities": ["src/entity/**/*{.js,.ts}"],
+  "cli": {
+    "entitiesDir": "src/entity"
+}
+
+// production mode
+"entities": ["dist/entity/**/*{.js,.ts}"],
+  "cli": {
+    "entitiesDir": "dist/entity"
+}
