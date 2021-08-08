@@ -1,0 +1,9 @@
+mutation EmailValidation($email: String!) {
+  emailValidation(email: $email) {
+    ok
+    error {
+      field
+      message
+    }
+  }
+}

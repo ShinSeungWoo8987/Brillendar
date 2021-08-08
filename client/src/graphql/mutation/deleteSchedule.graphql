@@ -1,0 +1,3 @@
+mutation DeleteSchedule($mongo_id: String!) {
+  deleteSchedule(mongo_id: $mongo_id)
+}

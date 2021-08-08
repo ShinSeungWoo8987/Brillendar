@@ -1,0 +1,9 @@
+mutation PhoneValidation($phone: String!) {
+  phoneValidation(phone: $phone) {
+    ok
+    error {
+      field
+      message
+    }
+  }
+}

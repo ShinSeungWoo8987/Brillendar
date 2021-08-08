@@ -1,0 +1,3 @@
+mutation ChangePrivateAccount($isPrivateAccount: Boolean!) {
+  changePrivateAccount(isPrivateAccount: $isPrivateAccount)
+}

@@ -1,0 +1,15 @@
+mutation CreateComment($mongo_id: String!, $description: String!) {
+  createComment(mongo_id: $mongo_id, description: $description) {
+    error {
+      field
+      message
+    }
+    comment {
+      _id
+      schedule_mongo_id
+      writer_id
+      description
+      created_at
+    }
+  }
+}

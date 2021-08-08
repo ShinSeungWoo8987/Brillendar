@@ -1,0 +1,9 @@
+mutation VerifyEmail($email: String!) {
+  verifyEmail(email: $email) {
+    ok
+    error {
+      field
+      message
+    }
+  }
+}

@@ -1,0 +1,3 @@
+mutation UpdateProfileImg($url: String!) {
+  updateProfileImg(url: $url)
+}

@@ -1,0 +1,24 @@
+# mutation CreateMember($register: MemberInput!) {
+#   createMember(register: $register) {
+#     error {
+#       field
+#       message
+#     }
+#     member {
+#       id
+#       email
+#       username
+#       phone
+#     }
+#   }
+# }
+
+mutation createMember($register: RegisterInput!) {
+  createMember(register: $register) {
+    ok
+    error {
+      field
+      message
+    }
+  }
+}

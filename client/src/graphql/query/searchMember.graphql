@@ -1,0 +1,9 @@
+query SearchMember($search: String!) {
+  searchMember(search: $search) {
+    id
+    username
+    profile_img
+
+    follower_count
+  }
+}

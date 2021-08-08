@@ -1,0 +1,9 @@
+query AvailableUsername($username: String!) {
+  availableUsername(username: $username) {
+    ok
+    error {
+      field
+      message
+    }
+  }
+}

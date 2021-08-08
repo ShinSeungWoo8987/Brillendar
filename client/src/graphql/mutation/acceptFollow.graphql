@@ -1,0 +1,3 @@
+mutation AcceptFollow($id: String!) {
+  acceptFollow(id: $id)
+}

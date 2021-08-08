@@ -1,0 +1,3 @@
+mutation LeaveMember($password: String!) {
+  leaveMember(password: $password)
+}

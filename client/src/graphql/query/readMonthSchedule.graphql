@@ -1,0 +1,33 @@
+query ReadMonthSchedule($scheduleRequest: ScheduleRequest!) {
+  readMonthSchedule(scheduleRequest: $scheduleRequest) {
+    error {
+      field
+      message
+    }
+    readable
+    Schedules {
+      id
+      title
+      description
+      comment_count
+
+      writer_id
+      tags {
+        idx
+        tag
+      }
+      mongo_id
+      open
+      start_at
+      finish_at
+      like_count
+      isLike
+
+      result_description
+      result_img {
+        idx
+        url
+      }
+    }
+  }
+}

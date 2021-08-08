@@ -1,0 +1,41 @@
+query ReadFeedSchedule($feedInput: FeedInput!) {
+  readFeedSchedule(feedInput: $feedInput) {
+    error {
+      field
+      message
+    }
+
+    feed {
+      member {
+        id
+        username
+        profile_img
+        follower_count
+      }
+      schedules {
+        id
+        title
+        description
+        comment_count
+
+        writer_id
+        tags {
+          idx
+          tag
+        }
+        mongo_id
+        open
+        start_at
+        finish_at
+        like_count
+        isLike
+
+        result_description
+        result_img {
+          idx
+          url
+        }
+      }
+    }
+  }
+}

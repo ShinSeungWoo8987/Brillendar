@@ -1,0 +1,3 @@
+mutation UnLikeSchedule($schedule_id: String!) {
+  unLikeSchedule(schedule_id: $schedule_id)
+}

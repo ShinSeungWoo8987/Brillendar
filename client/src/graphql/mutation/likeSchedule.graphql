@@ -1,0 +1,3 @@
+mutation LikeSchedule($schedule_id: String!) {
+  likeSchedule(schedule_id: $schedule_id)
+}

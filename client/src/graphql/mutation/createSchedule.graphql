@@ -1,0 +1,16 @@
+mutation CreateSchedule($schedule: ScheduleInput!, $tags: [String!]!) {
+  createSchedule(schedule: $schedule, tags: $tags) {
+    Schedule {
+      id
+      writer_id
+      mongo_id
+      open
+      start_at
+      finish_at
+    }
+    error {
+      field
+      message
+    }
+  }
+}

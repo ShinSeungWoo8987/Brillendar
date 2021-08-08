@@ -1,0 +1,35 @@
+query GetUserDataAndFollow {
+  getUserDataAndFollow {
+    error {
+      field
+      message
+    }
+
+    member {
+      id
+      username
+      profile_img
+      private
+
+      followings {
+        relation
+        target {
+          id
+          username
+          profile_img
+          follower_count
+        }
+      }
+
+      followers {
+        relation
+        member {
+          id
+          username
+          profile_img
+          follower_count
+        }
+      }
+    }
+  }
+}

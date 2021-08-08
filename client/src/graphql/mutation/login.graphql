@@ -1,0 +1,9 @@
+mutation Login($login: LoginInput!) {
+  login(login: $login) {
+    error {
+      field
+      message
+    }
+    accessToken
+  }
+}

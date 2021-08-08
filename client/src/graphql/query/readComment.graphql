@@ -1,0 +1,21 @@
+query ReadComment($mongo_id: String!) {
+  readComment(mongo_id: $mongo_id) {
+    error {
+      field
+      message
+    }
+    comments {
+      _id
+      schedule_mongo_id
+      writer_id
+      description
+      created_at
+      member {
+        id
+        username
+        profile_img
+        follower_count
+      }
+    }
+  }
+}

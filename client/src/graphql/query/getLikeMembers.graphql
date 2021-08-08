@@ -1,0 +1,17 @@
+query GetLikeMembers($schedule_id: String!) {
+  getLikeMembers(schedule_id: $schedule_id) {
+    error {
+      field
+      message
+    }
+
+    likes {
+      member {
+        id
+        username
+        profile_img
+        follower_count
+      }
+    }
+  }
+}

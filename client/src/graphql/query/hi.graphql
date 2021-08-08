@@ -1,0 +1,3 @@
+query Hi($testString: String!) {
+  hi(hi: $testString)
+}

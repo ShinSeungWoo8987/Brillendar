@@ -1,0 +1,3 @@
+mutation RequestUnFollow($id: String!) {
+  requestUnFollow(id: $id)
+}
