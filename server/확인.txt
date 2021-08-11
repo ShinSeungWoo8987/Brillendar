@@ -1,3 +1,10 @@
+************************************
+development / production mode 변경시 바꿔야 할 것.
+client/env.ts
+server/.env
+server/ormconfig.json (disr <-> src )
+************************************
+
 typeorm사용 tsconfig에서
 "experimentalDecorators": true
 "emitDecoratorMetadata": true,
@@ -16,3 +23,79 @@ Preference -> Setting -> implicitProjectConfig.experimentalDecorators 검색
   "cli": {
     "entitiesDir": "dist/entity"
 }
+
+
+
+
+
+MYSQL DB Trigger
+
+// 트리거 사용을 위해 
+set global log_bin_trust_function_creators=1;
+// aws사용시 파라미터그룹에서 직접 log_bin_trust_function_creators를 검색해서 편집해주기.
+
+-- --------------------------------------------------------------------------
+SHOW TRIGGERS;
+-- --------------------------------------------------------------------------
+CREATE TRIGGER like_after_insert_trigger
+    AFTER INSERT ON `like`
+    FOR EACH ROW
+UPDATE `schedule` SET like_count = like_count+1 WHERE id=NEW.schedule_id;
+
+CREATE TRIGGER like_after_delete_trigger
+    AFTER DELETE ON `like`
+    FOR EACH ROW
+UPDATE `schedule` SET like_count = like_count-1 WHERE id=OLD.schedule_id;
+-- --------------------------------------------------------------------------
+DELIMITER //
+CREATE TRIGGER follow_after_insert_trigger
+    AFTER INSERT ON `follow`
+    FOR EACH ROW
+BEGIN
+    IF NEW.relation = 2 THEN
+        UPDATE `member` SET follower_count = follower_count+1 WHERE id=NEW.target_id;
+	END IF;
+END; //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE TRIGGER follow_after_update_trigger
+    AFTER UPDATE ON `follow`
+    FOR EACH ROW
+BEGIN
+    IF NEW.relation = 2 THEN
+        UPDATE `member` SET follower_count = follower_count+1 WHERE id=NEW.target_id;
+	END IF;
+END; //
+DELIMITER ;
+
+
+CREATE TRIGGER follow_after_delete_trigger
+    AFTER DELETE ON `follow`
+    FOR EACH ROW
+UPDATE `member`
+SET follower_count = follower_count-1
+WHERE id=OLD.target_id;
+-- --------------------------------------------------------------------------
+
+// 트리거 확인
+SHOW TRIGGERS;
+
+// 트리거 제거
+DROP TRIGGER IF EXISTS follow_after_delete_trigger;
+
+
+
+
+// client에서 graphql codegen사용(yarn gen입력)후 client/generated/graphql.ts에서 수정 필요
+export type Tag = {
+  __typename?: 'Tag';
+  schedule_id?: Scalars['String'];
+  schedule?: Schedule;
+  tag: Scalars['String'];
+  idx: Scalars['Float'];
+};
+
+export type CombinedSchedule
+에서 likes, writer에 ?붙여주기 ( === undefined도 가능하도록 )

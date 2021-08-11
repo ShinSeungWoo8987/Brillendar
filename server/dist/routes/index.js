@@ -44,7 +44,7 @@ const verifyToken = (req, res, next) => {
 exports.verifyToken = verifyToken;
 ///////////////
 router.get('/refresh_token', exports.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body.user.id);
+    // console.log(req.body.user.id);
     const member = yield Member_1.Member.findOne({ id: req.body.user.id });
     if (!member) {
         res.send({ error: { field: 'token', message: 'Invalid' } });

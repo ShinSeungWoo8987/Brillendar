@@ -32,7 +32,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
 
 ///////////////
 router.get('/refresh_token', verifyToken, async (req, res) => {
-  console.log(req.body.user.id);
+  // console.log(req.body.user.id);
   const member = await Member.findOne({ id: req.body.user.id });
   if (!member) {
     res.send({ error: { field: 'token', message: 'Invalid' } });

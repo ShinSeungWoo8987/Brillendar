@@ -50,8 +50,12 @@ class RegisterResponse {
 export class RegisterResolver {
   @Mutation(() => RegisterResponse)
   async emailValidation(@Arg('email') email: string): Promise<RegisterResponse> {
-    const member = await Member.find({ email });
-    if (member.length !== 0) return { ok: false, error: { field: 'Send Email', message: 'Email already exist.' } };
+    try {
+      const member = await Member.find({ email });
+      if (member.length !== 0) return { ok: false, error: { field: 'Send Email', message: 'Email already exist.' } };
+    } catch (err) {
+      return { ok: false, error: { field: 'Send Email', message: 'Database error' } };
+    }
 
     // 이메일 검증
     const emailSchema = Joi.string().email({ minDomainSegments: 2 });
@@ -143,7 +147,7 @@ export class RegisterResolver {
   async createMember(
     @Arg('register') { email, password, username, phone, code }: RegisterInput
   ): Promise<RegisterResponse> {
-    console.log(email, password, username, phone, code);
+    // console.log(email, password, username, phone, code);
 
     const pattern = /[^a-z0-9_]/g;
     if (pattern.test(username))

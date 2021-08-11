@@ -78,9 +78,14 @@ RegisterResponse = __decorate([
 let RegisterResolver = class RegisterResolver {
     emailValidation(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const member = yield Member_1.Member.find({ email });
-            if (member.length !== 0)
-                return { ok: false, error: { field: 'Send Email', message: 'Email already exist.' } };
+            try {
+                const member = yield Member_1.Member.find({ email });
+                if (member.length !== 0)
+                    return { ok: false, error: { field: 'Send Email', message: 'Email already exist.' } };
+            }
+            catch (err) {
+                return { ok: false, error: { field: 'Send Email', message: 'Database error' } };
+            }
             // 이메일 검증
             const emailSchema = joi_1.default.string().email({ minDomainSegments: 2 });
             const checkEmail = emailSchema.validate(email);
@@ -176,7 +181,7 @@ let RegisterResolver = class RegisterResolver {
     // 회원가입
     createMember({ email, password, username, phone, code }) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(email, password, username, phone, code);
+            // console.log(email, password, username, phone, code);
             const pattern = /[^a-z0-9_]/g;
             if (pattern.test(username))
                 return { ok: false, error: { field: 'username', message: 'Wrong regular expression.' } };
