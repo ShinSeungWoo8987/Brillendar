@@ -1,10 +1,10 @@
 import { useReactiveVar } from '@apollo/client';
 import { BlurView } from 'expo-blur';
 import React from 'react';
-import { TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { TouchableWithoutFeedback, Platform } from 'react-native';
 import styled from 'styled-components/native';
 
-import { TextMode } from '../../../../styles/styled';
+import { TextMode, AndroidBlurView } from '../../../../styles/styled';
 import { useNavigation } from '@react-navigation/native';
 import { MainNavProps } from '../../../navigator/Main/MainParamList';
 import {
@@ -124,7 +124,7 @@ const BlurModal: React.FC<BlurModalProps> = ({ navigation, route }) => {
 
 export default BlurModal;
 
-const ModalContainer = styled(BlurView)`
+const ModalContainer = styled(Platform.OS !== 'ios' ? AndroidBlurView : BlurView)`
   position: absolute;
   right: 0;
   bottom: 0;

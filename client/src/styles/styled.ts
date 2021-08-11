@@ -111,6 +111,11 @@ export const ChangeBtnText = styled(TextMode)`
   color: white;
 `;
 
+export const AndroidBlurView = styled.View`
+  background-color: ${COLORS.lightGray4};
+  /* background-color: rgba(255, 255, 255, 0.4); */
+`;
+
 export const shadow = {
   ...Platform.select({
     web: {

@@ -11,7 +11,7 @@ import { changeTabBarDisplay } from '../../../../stores';
 import isSameDay from 'date-fns/isSameDay';
 
 import { MaterialIcons, Feather } from '../../../../styles/vectorIcons';
-import { CenterTouchableOpacity, CenterView } from '../../../../styles/styled';
+import { CenterTouchableOpacity, CenterView, AndroidBlurView } from '../../../../styles/styled';
 import appTheme from '../../../../styles/constants';
 const { STYLED_FONTS, COLORS } = appTheme;
 interface DatePickerProps {
@@ -157,10 +157,6 @@ const DayOfTheWeek = styled(CenterView)`
 `;
 
 ///////////
-const AndroidBlurView = styled.View`
-  background-color: ${COLORS.lightGray4};
-  /* background-color: rgba(255, 255, 255, 0.4); */
-`;
 
 const ModalContainer = styled(Platform.OS !== 'ios' ? AndroidBlurView : BlurView)`
   position: absolute;
