@@ -67,7 +67,9 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
               ? `0${getMinutes(utcToLocalTime(item.finish_at))}`
               : getMinutes(utcToLocalTime(item.finish_at))}
           </ScheduleText>
-          <TitleText numberOfLines={1}>{item.title}</TitleText>
+          <TitleText screenMode={screenMode} numberOfLines={1}>
+            {item.title}
+          </TitleText>
         </ScheduleRow>
       ))}
     </Container>
@@ -77,7 +79,7 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
 export default ScheduleItem;
 
 const Container = styled.View<ScreenMode>`
-  background-color: ${({ screenMode }) => (screenMode === 'dark' ? '#3D3C3F' : COLORS.white)};
+  background-color: ${({ screenMode }) => (screenMode === 'dark' ? '#3D3C3F' : 'white')};
   margin-top: 14px;
   padding-vertical: 23px;
   padding-horizontal: 23px;

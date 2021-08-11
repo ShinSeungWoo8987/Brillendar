@@ -123,6 +123,6 @@ export const shadow = {
       shadowOpacity: 0.16,
       shadowRadius: 4,
     },
-    android: { elevation: 1 },
+    android: { elevation: 6 },
   }),
 };

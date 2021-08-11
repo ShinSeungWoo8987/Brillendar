@@ -1,19 +1,22 @@
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/native';
-import { CenterView, CenterTouchableOpacity } from '../../../../styles/styled';
+import { CenterView, CenterTouchableOpacity, Container, TextMode } from '../../../../styles/styled';
 import { MainNavProps } from '../../../navigator/Main/MainParamList';
 import { TextInput } from 'react-native-paper';
 import appTheme from '../../../../styles/constants';
 import { useLeaveMemberMutation } from '../../../../generated/graphql';
 import { deleteSecureStore } from '../../../../functions';
 import restartApp from '../../../../functions/restartApp';
-const { STYLED_FONTS } = appTheme;
+import { screenModeVar } from '../../../../stores';
+import { useReactiveVar } from '@apollo/client';
+const { STYLED_FONTS, COLORS } = appTheme;
 
 interface LeaveMemberScreenProps extends MainNavProps<'LeaveMember'> {}
 
 const LeaveMemberScreen: React.FC<LeaveMemberScreenProps> = ({ navigation, route }) => {
   const [password, setPassword] = useState('');
+  const screenMode = useReactiveVar(screenModeVar);
 
   const [leaveMember, { loading }] = useLeaveMemberMutation();
 
@@ -30,21 +33,28 @@ const LeaveMemberScreen: React.FC<LeaveMemberScreenProps> = ({ navigation, route
   };
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <LeaveConatiner>
-        <LogoText>회원 탈퇴</LogoText>
+      <Container screenMode={screenMode}>
+        <LeaveConatiner>
+          <LogoText screenMode={screenMode}>회원 탈퇴</LogoText>
 
-        <UserTextInput
-          secureTextEntry
-          label="Password"
-          mode="outlined"
-          value={password}
-          onChangeText={(password) => setPassword(password)}
-        />
+          <TextInputBorder
+            secureTextEntry
+            label="Password"
+            mode="outlined"
+            value={password}
+            placeholderTextColor={screenMode === 'dark' ? COLORS.lightGray : COLORS.lightGray4}
+            onChangeText={(password) => setPassword(password)}
+          />
 
-        <Btn onPress={onLeaveMember} disabled={loading}>
-          {loading ? <ActivityIndicator size="small" /> : <BtnText>탈퇴하기</BtnText>}
-        </Btn>
-      </LeaveConatiner>
+          <Btn onPress={onLeaveMember} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator size="small" color="gray" />
+            ) : (
+              <BtnText screenMode={screenMode}>탈퇴하기</BtnText>
+            )}
+          </Btn>
+        </LeaveConatiner>
+      </Container>
     </TouchableWithoutFeedback>
   );
 };
@@ -58,16 +68,17 @@ const LeaveConatiner = styled(CenterView)`
   padding-bottom: 40px;
 `;
 
-const LogoText = styled.Text`
+const LogoText = styled(TextMode)`
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 28px;
 `;
 
-export const UserTextInput = styled(TextInput)<{ checkBox?: boolean }>`
-  width: ${({ checkBox }) => (checkBox ? '240px' : '350px')};
+export const TextInputBorder = styled(TextInput)<ScreenMode>`
+  width: 350px;
   height: 52px;
   margin-bottom: 8px;
+  background-color: ${({ screenMode }) => (screenMode === 'dark' ? COLORS.lightGray3 : COLORS.white)};
 `;
 
 export const Btn = styled(CenterTouchableOpacity)`
@@ -79,7 +90,6 @@ export const Btn = styled(CenterTouchableOpacity)`
   border-radius: 6px;
 `;
 
-export const BtnText = styled.Text`
-  color: #5712d1;
-  ${STYLED_FONTS.body3}
+export const BtnText = styled.Text<ScreenMode>`
+  color: ${({ screenMode }) => (screenMode === 'dark' ? COLORS.primary : '#5712d1')} ${STYLED_FONTS.body3};
 `;

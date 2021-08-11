@@ -23,7 +23,7 @@ import { readScheduleVariablesVar, screenModeVar, changeScheduleModal } from '..
 import { TextMode, TagItem, Highlight, TagText, shadow } from '../../../../styles/styled';
 
 import { Ionicons, FontAwesome5 } from '../../../../styles/vectorIcons';
-import appTheme from '../../../../styles/constants';
+import appTheme, { paddingHorizontal, windowWidth } from '../../../../styles/constants';
 
 // @ts-ignore
 import Swiper from 'react-native-swiper/src';
@@ -226,13 +226,13 @@ const CalendarScheduleItem: React.FC<CalendarScheduleItemProps> = ({
           </FlexRow>
 
           {result_img.length > 0 && (
-            <SwiperView>
-              <Swiper loop dot={<InactiveDot />} activeDot={<ActiveDot />} paginationStyle={{ bottom: 18 }}>
+            <View style={SwiperViewStyle}>
+              <Swiper loop dot={<InactiveDot />} activeDot={<ActiveDot />} paginationStyle={{ bottom: 0 }}>
                 {result_img.map((r) => (
                   <ResultImg key={r.idx} source={{ uri: r.url }} />
                 ))}
               </Swiper>
-            </SwiperView>
+            </View>
           )}
 
           {result_description !== '' && result_img.length === 0 && (
@@ -291,7 +291,7 @@ export default CalendarScheduleItem;
 
 const Container = styled.View<ScreenMode>`
   /* background-color: ${({ screenMode }) => (screenMode === 'dark' ? '#3D3C3F' : COLORS.white)}; */
-  background-color: ${({ screenMode }) => (screenMode === 'dark' ? COLORS.gray : COLORS.white)};
+  background-color: ${({ screenMode }) => (screenMode === 'dark' ? COLORS.gray : 'white')};
   margin-top: 14px;
   padding-vertical: 23px;
   padding-horizontal: 23px;
@@ -316,13 +316,11 @@ const ScheduleText = styled(TextMode)`
   font-weight: 500;
 `;
 
-const SwiperView = styled(Swiper)`
-  margin-top: 20px;
-  width: 100%;
-  height: undefined;
-  aspect-ratio: 0.95;
-  /* border-width: 1px; */
-`;
+const SwiperViewStyle = {
+  marginTop: 20,
+  width: windowWidth - paddingHorizontal * 2 - 23 * 2,
+  height: windowWidth - paddingHorizontal * 2 - 23 * 2 + 20,
+};
 
 const ResultImg = styled.Image`
   width: 100%;

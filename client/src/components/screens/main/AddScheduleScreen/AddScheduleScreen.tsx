@@ -420,7 +420,7 @@ const AddScheduleScreen: React.FC<AddScheduleScreenProps> = ({ navigation, route
 
       <Bottom onPress={onSubmit} disabled={loading}>
         <UploadBtn start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} colors={['#F0D6C1', '#E9A7A2']}>
-          {loading ? <ActivityIndicator size="small" /> : <UploadText>업로드</UploadText>}
+          {loading ? <ActivityIndicator size="small" color="gray" /> : <UploadText>업로드</UploadText>}
         </UploadBtn>
       </Bottom>
 

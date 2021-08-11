@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TouchableWithoutFeedback, Keyboard, View, Alert, ActivityIndicator } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, View, Alert, ActivityIndicator, TextInput } from 'react-native';
 import styled from 'styled-components/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -14,7 +14,7 @@ import {
 } from '../../../../generated/graphql';
 import { CenterTouchableOpacity, Container } from '../../../../styles/styled';
 import { AuthNavProps } from '../../../navigator/Auth/AuthParamList';
-import { Btn, BtnText, LoginBtn, LoginText, UserTextInput } from '../LoginScreen/LoginScreen';
+import { Btn, BtnText, LoginBtn, LoginText, TextInputBorder, TextInputStyle } from '../LoginScreen/LoginScreen';
 
 import appTheme, { windowHeight, windowWidth } from '../../../../styles/constants';
 
@@ -143,7 +143,7 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
 
             if (errorMessage === 'Cannot send email.') {
               Alert.alert('Email', '이메일을 전송하지 못하였습니다.\n다시 시도해주세요.');
-            } else if (errorMessage === 'Invalid Email.') {
+            } else if (errorMessage === 'Invalid email.') {
               Alert.alert('Email', '잘못된 이메일 형식입니다.\n다시 입력해주세요.');
             } else if (errorMessage === 'Email already exist.') {
               Alert.alert('Email', '이미 사용중인 이메일입니다.\n다시 입력해주세요.');
@@ -229,13 +229,14 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
           <View>
             <>
               <Row>
-                <UserTextInput
+                <TextInputBorder
                   checkBox={!emailVerified}
                   label="Email"
                   mode="outlined"
                   value={userInput.email}
                   onChangeText={(email) => setUserInput({ ...userInput, email })}
                   disabled={emailSent}
+                  render={(props) => <TextInput {...props} style={TextInputStyle} />}
                 />
                 {!emailVerified && (
                   <VerifyBtn
@@ -243,7 +244,7 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
                     disabled={verifyEmailRes.loading || sendEmailRes.loading}
                   >
                     {verifyEmailRes.loading || sendEmailRes.loading ? (
-                      <ActivityIndicator size="small" />
+                      <ActivityIndicator size="small" color="gray" />
                     ) : (
                       <VerifyText>{emailSent ? '인증완료' : '인증하기'}</VerifyText>
                     )}
@@ -252,24 +253,26 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
               </Row>
             </>
 
-            <UserTextInput
+            <TextInputBorder
               secureTextEntry={true}
               label="Password"
               mode="outlined"
               value={userInput.password}
               onChangeText={(password) => setUserInput({ ...userInput, password })}
+              render={(props) => <TextInput {...props} style={TextInputStyle} />}
             />
 
-            <UserTextInput
+            <TextInputBorder
               secureTextEntry={true}
               label="Password Confirm"
               mode="outlined"
               error={passwordConfirm !== '' && userInput.password !== passwordConfirm}
               value={passwordConfirm}
               onChangeText={(passwordConfirm) => setPasswordConfirm(passwordConfirm)}
+              render={(props) => <TextInput {...props} style={TextInputStyle} />}
             />
 
-            <UserTextInput
+            <TextInputBorder
               error={usernameError}
               label="Nickname"
               mode="outlined"
@@ -285,11 +288,12 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
 
                 setUserInput({ ...userInput, username: filteredUsername });
               }}
+              render={(props) => <TextInput {...props} style={TextInputStyle} />}
             />
 
             <>
               <Row>
-                <UserTextInput
+                <TextInputBorder
                   checkBox={!messageSent}
                   label="Phone"
                   mode="outlined"
@@ -297,18 +301,23 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
                   onChangeText={(phone) => setUserInput({ ...userInput, phone })}
                   keyboardType="number-pad"
                   disabled={messageSent}
+                  render={(props) => <TextInput {...props} style={TextInputStyle} />}
                 />
 
                 {!messageSent && (
                   <VerifyBtn onPress={onSendMessage} disabled={sendMessageRes.loading}>
-                    {sendMessageRes.loading ? <ActivityIndicator size="small" /> : <VerifyText>인증하기</VerifyText>}
+                    {sendMessageRes.loading ? (
+                      <ActivityIndicator size="small" color="gray" />
+                    ) : (
+                      <VerifyText>인증하기</VerifyText>
+                    )}
                   </VerifyBtn>
                 )}
               </Row>
 
               {messageSent && !phoneVerified && (
                 <Row>
-                  <UserTextInput
+                  <TextInputBorder
                     checkBox={true}
                     label="Code"
                     mode="outlined"
@@ -318,6 +327,7 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
                       if (code.length === 6) Keyboard.dismiss();
                     }}
                     keyboardType="number-pad"
+                    render={(props) => <TextInput {...props} style={TextInputStyle} />}
                   />
 
                   <VerifyBtn onPress={onVerifyCode}>
@@ -330,7 +340,7 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
 
           <View>
             <RegisterBtn onPress={onRegister} disabled={loading}>
-              {loading ? <ActivityIndicator size="small" /> : <LoginText>회원가입</LoginText>}
+              {loading ? <ActivityIndicator size="small" color="gray" /> : <LoginText>회원가입</LoginText>}
             </RegisterBtn>
 
             <Btn onPress={() => navigation.goBack()}>

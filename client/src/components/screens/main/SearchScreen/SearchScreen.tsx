@@ -83,7 +83,7 @@ const SearchView = styled.View<ScreenMode>`
   margin-right: 16px;
   padding-left: 12px;
 
-  background-color: ${({ screenMode }) => (screenMode === 'dark' ? COLORS.lightGray3 : COLORS.lightGray2)};
+  background-color: ${({ screenMode }) => (screenMode === 'dark' ? COLORS.lightGray3 : 'white')};
   border-radius: 5px;
   border-width: 1px;
   border-color: ${COLORS.lightGray3};
@@ -91,7 +91,7 @@ const SearchView = styled.View<ScreenMode>`
 const SearchText = styled.TextInput<ScreenMode>`
   width: 100%;
   margin-left: 8px;
-  margin-top: -2px;
+  margin-top: -8px;
 
   color: black;
   ${STYLED_FONTS.body4};

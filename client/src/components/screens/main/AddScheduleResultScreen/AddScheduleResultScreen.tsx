@@ -241,7 +241,7 @@ const AddScheduleResultScreen: React.FC<AddScheduleResultScreenProps> = ({ navig
 
         <Bottom onPress={onSubmit} disabled={uploading}>
           <UploadBtn start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} colors={['#F0D6C1', '#E9A7A2']}>
-            {uploading ? <ActivityIndicator size="small" /> : <UploadText>업로드</UploadText>}
+            {uploading ? <ActivityIndicator size="small" color="gray" /> : <UploadText>업로드</UploadText>}
           </UploadBtn>
         </Bottom>
       </Wrapper>

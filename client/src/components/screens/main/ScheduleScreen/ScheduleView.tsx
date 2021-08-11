@@ -23,7 +23,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ selectedDate, setDatepicker
   const screenMode = useReactiveVar(screenModeVar);
 
   return (
-    <ScheduleContainer>
+    <ScheduleContainer contentContainerStyle={{ paddingHorizontal: SIZES.paddingHorizontal, paddingBottom: 12 }}>
       <TouchableOpacity
         onPress={() => {
           changeTabBarDisplay(false);
@@ -55,7 +55,7 @@ export default ScheduleView;
 
 const ScheduleContainer = styled.ScrollView`
   width: 100%;
-  padding-horizontal: ${SIZES.paddingHorizontal}px;
+  /* padding-horizontal: ${SIZES.paddingHorizontal}px; */
   padding-bottom: 30px;
 `;
 

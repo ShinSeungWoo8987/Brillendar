@@ -23,6 +23,7 @@ const Bottom = createBottomTabNavigator<MainParamList>();
 const MainContainer: React.FC<MainContainerProps> = () => {
   return (
     <Bottom.Navigator
+      tabBarOptions={{ style: { overflow: 'visible' } }}
       initialRouteName="Feed"
       tabBar={(props) => <TabBarScreen {...props} />}
       screenOptions={

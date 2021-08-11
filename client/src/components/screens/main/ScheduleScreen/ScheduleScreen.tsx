@@ -85,7 +85,7 @@ const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) =>
 
       {loading ? (
         <Center>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color="gray" />
         </Center>
       ) : data === undefined || error ? (
         <></>

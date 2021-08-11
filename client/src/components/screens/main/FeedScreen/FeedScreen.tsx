@@ -73,7 +73,7 @@ const FeedScreen: React.FC<FeedScreenProps> = ({ route, navigation }) => {
 
       {loading ? (
         <Center>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color="gray" />
         </Center>
       ) : data === undefined || error || data.readFeedSchedule.error ? (
         errorScreen
@@ -82,7 +82,7 @@ const FeedScreen: React.FC<FeedScreenProps> = ({ route, navigation }) => {
       ) : (
         <ScrollView style={{ flex: 1 }}>
           <OngoingSchedule screenMode={screenMode} horizontal={true}>
-            {ongoingFeed ? (
+            {ongoingFeed.length !== 0 ? (
               ongoingFeed.map(({ id, username, profile_img, follower_count, title }) => (
                 <OngoingScheduleItem
                   key={id}
@@ -96,14 +96,14 @@ const FeedScreen: React.FC<FeedScreenProps> = ({ route, navigation }) => {
                 />
               ))
             ) : (
-              <AlertText screenMode={screenMode}>진행중인 스케줄 없음</AlertText>
+              <AlertText screenMode={screenMode}>지금 진행중인 스케줄이 없어요.</AlertText>
             )}
 
             <View style={{ width: 20 }} />
           </OngoingSchedule>
           {/* ///////////////////////////////////////// */}
 
-          <ScheduleFeed>
+          <ScheduleFeed contentContainerStyle={{ paddingHorizontal: SIZES.paddingHorizontal, paddingBottom: 12 }}>
             {data.readFeedSchedule.feed?.map((feed) => (
               <ScheduleItem key={feed.member.id} route={route} navigation={navigation} feed={feed as Feed} />
             ))}
@@ -126,7 +126,7 @@ const OngoingSchedule = styled.ScrollView<ScreenMode>`
 
 const ScheduleFeed = styled.ScrollView`
   flex: 1;
-  padding-horizontal: ${SIZES.paddingHorizontal}px;
+  /* padding-horizontal: ${SIZES.paddingHorizontal}px; */
   padding-bottom: 30px;
 `;
 
@@ -148,7 +148,7 @@ const Logo = styled(TextMode)`
 `;
 
 const AlertText = styled(TextMode)`
-  ${STYLED_FONTS.body3}
+  ${STYLED_FONTS.body4}
 `;
 
 //

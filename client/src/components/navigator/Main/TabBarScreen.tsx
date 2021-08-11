@@ -11,9 +11,10 @@ import { tabBarDisplayVar, screenModeVar, scheduleModalVar } from '../../../stor
 import { useGetUserDataAndFollowQuery } from '../../../generated/graphql';
 
 import { MaterialCommunityIcons, Ionicons, Octicons } from '../../../styles/vectorIcons';
-import appTheme from '../../../styles/constants';
+import appTheme, { windowWidth } from '../../../styles/constants';
+import { Platform } from 'react-native';
 const { COLORS, FONTS, SIZES, STYLED_FONTS } = appTheme;
-appTheme;
+
 interface TabBarScreenProps extends BottomTabBarProps<BottomTabBarOptions> {}
 
 const TabBarScreen: React.FC<TabBarScreenProps> = ({ state, descriptors, navigation }) => {
@@ -73,55 +74,51 @@ const TabBarScreen: React.FC<TabBarScreenProps> = ({ state, descriptors, navigat
         return (
           <Touch key={idx} onPress={onPress} testID={options.tabBarTestID} accessibilityRole="button">
             {idx === 0 && (
-              <Icon key={idx}>
+              <BottomNavBtn key={idx}>
                 {isFocused ? (
                   <MaterialCommunityIcons name="home" size={24} color={color} />
                 ) : (
                   <MaterialCommunityIcons name="home-outline" size={24} color="#A7A7A7" />
                 )}
-              </Icon>
+              </BottomNavBtn>
             )}
 
             {idx === 1 && (
-              <Icon key={idx}>
+              <BottomNavBtn key={idx}>
                 {isFocused ? (
                   <Ionicons name="ios-people-sharp" size={24} color={color} />
                 ) : (
                   <Ionicons name="ios-people-outline" size={24} color="#A7A7A7" />
                 )}
-              </Icon>
+              </BottomNavBtn>
             )}
 
             {idx === 2 && (
               <Shadow key={idx} style={shadow}>
                 <MiddleIcon start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} colors={['#F0D6C1', '#E9A7A2']}>
-                  {isFocused ? (
-                    <Octicons name="plus" size={24} color={COLORS.black} />
-                  ) : (
-                    <Octicons name="plus" size={24} color={COLORS.black} />
-                  )}
+                  <Octicons name="plus" size={24} color={COLORS.black} />
                 </MiddleIcon>
               </Shadow>
             )}
 
             {idx === 3 && (
-              <Icon key={idx}>
+              <BottomNavBtn key={idx}>
                 {isFocused ? (
                   <Ionicons name="search" size={24} color={color} />
                 ) : (
                   <Ionicons name="search-outline" size={24} color="#A7A7A7" />
                 )}
-              </Icon>
+              </BottomNavBtn>
             )}
 
             {idx === 4 && (
-              <Icon key={idx}>
+              <BottomNavBtn key={idx}>
                 {isFocused ? (
                   <MaterialCommunityIcons name="calendar-month" size={24} color={color} />
                 ) : (
                   <MaterialCommunityIcons name="calendar-month-outline" size={24} color="#A7A7A7" />
                 )}
-              </Icon>
+              </BottomNavBtn>
             )}
           </Touch>
         );
@@ -148,23 +145,32 @@ const Touch = styled.TouchableOpacity`
   padding: 8px;
 `;
 
-const MiddleIcon = styled(LinearGradient)`
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
-
-  justify-content: center;
-  align-items: center;
-`;
-
 const Shadow = styled(CenterView)`
+  ${Platform.OS !== 'ios'
+    ? `
+  bottom: 0px;
+  width: 40px;
+  height: 40px;
+`
+    : `
   bottom: 18px;
   width: 60px;
   height: 60px;
+`};
+
   border-radius: 30px;
 
   justify-content: center;
   align-items: center;
 `;
 
-const Icon = styled.View``;
+const MiddleIcon = styled(LinearGradient)`
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+
+  justify-content: center;
+  align-items: center;
+`;
+
+const BottomNavBtn = styled.View``;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { TextInput, ActivityIndicator, Button, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
+import { TextInput as PaperTextInput } from 'react-native-paper';
 import styled from 'styled-components/native';
 import { setSecureStore, setupAxiosInterceptors } from '../../../../functions';
 import { LoginInput, useLoginMutation } from '../../../../generated/graphql';
@@ -52,22 +52,24 @@ const Login: React.FC<LoginProps> = ({
       <LoginContainer>
         <LogoText>Brillendar</LogoText>
 
-        <UserTextInput
+        <TextInputBorder
           label="Email"
           mode="outlined"
           value={loginInput.email}
           onChangeText={(email) => setLoginInput({ ...loginInput, email })}
+          render={(props) => <TextInput {...props} style={TextInputStyle} />}
         />
-        <UserTextInput
+        <TextInputBorder
           secureTextEntry
           label="Password"
           mode="outlined"
           value={loginInput.password}
           onChangeText={(password) => setLoginInput({ ...loginInput, password })}
+          render={(props) => <TextInput {...props} style={TextInputStyle} />}
         />
 
         <LoginBtn onPress={onLogin} disabled={loading}>
-          {loading ? <ActivityIndicator size="small" /> : <LoginText>로그인</LoginText>}
+          {loading ? <ActivityIndicator size="small" color="gray" /> : <LoginText>로그인</LoginText>}
         </LoginBtn>
 
         <Btn onPress={() => navigation.navigate(`Register`)}>
@@ -94,11 +96,18 @@ const LogoText = styled.Text`
   margin-bottom: 28px;
 `;
 
-export const UserTextInput = styled(TextInput)<{ checkBox?: boolean }>`
+export const TextInputBorder = styled(PaperTextInput)<{ checkBox?: boolean }>`
   width: ${({ checkBox }) => (checkBox ? '240px' : '350px')};
   height: 52px;
   margin-bottom: 8px;
+
+  justify-content: center;
 `;
+
+export const TextInputStyle = {
+  height: 52,
+  paddingLeft: 14,
+};
 
 export const Btn = styled(CenterTouchableOpacity)`
   margin-bottom: 8px;

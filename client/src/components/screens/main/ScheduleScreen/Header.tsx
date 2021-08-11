@@ -283,7 +283,7 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
     case 2:
       followBtn = (
         <FollowBtn onPress={() => onUnFollow()}>
-          <MaterialCommunityIcons name="heart" size={16} color={screenMode === 'dark' ? COLORS.white : '#fd8686'} />
+          <MaterialCommunityIcons name="heart" size={16} color="#fd8686" />
         </FollowBtn>
       );
       break;

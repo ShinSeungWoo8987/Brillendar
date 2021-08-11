@@ -1,14 +1,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { View, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import { Drawer } from 'react-native-paper';
 import produce from 'immer';
 import * as ImagePicker from 'expo-image-picker';
 import { useReactiveVar } from '@apollo/client';
 import { DrawerContentComponentProps, DrawerContentOptions, DrawerItem } from '@react-navigation/drawer';
 
 import { Container, TextMode, ChangeBtn, ChangeBtnText } from '../../../styles/styled';
-import { uploadProfileImg, deleteSecureStore } from '../../../functions';
+import { uploadProfileImg, deleteSecureStore, setSecureStore } from '../../../functions';
 
 import { screenModeVar, changeScreenMode } from '../../../stores';
 import {
@@ -191,9 +190,15 @@ const DrawerNavScreen: React.FC<DrawerNavScreenProps> = ({ state, descriptors, s
       <View>
         <Bottom>
           <Row>
-            <TouchableOpacity onPress={() => changeScreenMode(screenMode === 'dark' ? 'light' : 'dark')}>
+            <TouchableOpacity
+              onPress={() => {
+                const _mode = screenMode === 'dark' ? 'light' : 'dark';
+                setSecureStore('screen_mode', _mode);
+                changeScreenMode(_mode);
+              }}
+            >
               <Ionicons
-                name={screenMode === 'dark' ? 'ios-moon-outline' : 'ios-sunny-outline'}
+                name={screenMode === 'dark' ? 'ios-moon' : 'ios-sunny-outline'}
                 color={iconColor}
                 size={24}
                 style={IconStyle}

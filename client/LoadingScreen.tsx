@@ -7,7 +7,7 @@ interface LoadingScreenProps {}
 const LoadingScreen: React.FC<LoadingScreenProps> = () => {
   return (
     <CenterView style={{ flex: 1 }}>
-      <ActivityIndicator size="large" />
+      <ActivityIndicator size="large" color="gray" />
     </CenterView>
   );
 };

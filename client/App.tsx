@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, useReactiveVar } from '@apollo/client';
 
 import LoadingScreen from './LoadingScreen';
 import LoadFont from './LoadFont';
 import AuthContainer from './src/components/navigator/Auth/AuthContainer';
 import DrawerContainer from './src/components/navigator/Drawer/DrawerContainer';
 
-import { setupAxiosInterceptors, getSecureStoreValueByKey } from './src/functions';
+import { setupAxiosInterceptors, getSecureStoreValueByKey, setSecureStore } from './src/functions';
 import { serverUrl } from './env';
+import { screenModeVar, changeScreenMode } from './src/stores';
 
 const App: React.FC = () => {
   const [screen, setScreen] = useState<'Loading' | 'Auth' | 'Main'>('Loading');
@@ -17,7 +18,22 @@ const App: React.FC = () => {
   // 그걸 방지하기위해
   const [accessToken, setAccessToken] = useState<null | string>(null);
 
+  const screenMode = useReactiveVar(screenModeVar);
+
   useEffect(() => {
+    getSecureStoreValueByKey('screen_mode')
+      .then((mode) => {
+        if (mode) {
+          changeScreenMode(mode as ScreenType);
+        } else {
+          changeScreenMode('light');
+        }
+      })
+      .catch((err) => {
+        setSecureStore('screen_mode', 'light');
+        changeScreenMode('light');
+      });
+
     getSecureStoreValueByKey('access_token')
       .then((token) => {
         // 토큰이 있으면, axios로 refresh token받아서 재설정

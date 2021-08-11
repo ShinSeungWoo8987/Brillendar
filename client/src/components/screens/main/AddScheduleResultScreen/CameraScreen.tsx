@@ -8,7 +8,7 @@ import { AddScheduleResultNavProps } from '../../../navigator/AddScheduleResult/
 import { Feather, SimpleLineIcons } from '../../../../styles/vectorIcons';
 import appTheme from '../../../../styles/constants';
 import styled from 'styled-components/native';
-import { CenterTouchableOpacity } from '../../../../styles/styled';
+import { CenterTouchableOpacity, CenterView } from '../../../../styles/styled';
 const { STYLED_FONTS, COLORS } = appTheme;
 
 interface CameraScreenProps extends AddScheduleResultNavProps<'Camera'> {}
@@ -59,7 +59,11 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
     return <View />;
   }
   if (hasCameraPermission === false || hasGalleryPermission === false) {
-    return <Text>No access to camera</Text>;
+    return (
+      <CenterView>
+        <Text>No access to camera</Text>
+      </CenterView>
+    );
   }
 
   return (

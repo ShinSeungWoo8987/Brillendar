@@ -72,7 +72,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ selectedDate, setSelectedDa
   }, [selectedDate]);
 
   return (
-    <ScrollView style={ScrollViewStyle} horizontal={true} ref={scrollRef}>
+    <ScrollView contentContainerStyle={ScrollViewStyle} horizontal={true} ref={scrollRef}>
       {monthDays.map((day, idx) => {
         if (isSameDay(day.date, selectedDate))
           return (
@@ -86,7 +86,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ selectedDate, setSelectedDa
           );
         else return <DayItem key={day.day} {...day} count={scheduleCount[idx]} setSelectedDate={setSelectedDate} />;
       })}
-      <View style={{ width: 22 }} />
+      {/* <View style={{ width: 22 }} /> */}
     </ScrollView>
   );
 };
@@ -99,7 +99,13 @@ const CalendarContainer = styled.ScrollView`
   padding-bottom: 20px;
 `;
 
-const ScrollViewStyle = { paddingHorizontal: SIZES.paddingHorizontal, paddingTop: 8, paddingBottom: 20 };
+const ScrollViewStyle = {
+  paddingLeft: SIZES.paddingHorizontal,
+  paddingRight: 6,
+
+  paddingTop: 8,
+  paddingBottom: 20,
+};
 
 const DaysOfWeekText = styled(TextMode)`
   font-size: 12px;
