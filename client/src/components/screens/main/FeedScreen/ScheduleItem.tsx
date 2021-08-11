@@ -2,7 +2,7 @@ import { useReactiveVar } from '@apollo/client';
 import { getDate, getHours, getMinutes, getMonth, getYear } from 'date-fns';
 import React from 'react';
 import styled from 'styled-components/native';
-import { utcToLocalTime } from '../../../../functions';
+import { seoulToLocalTime } from '../../../../functions';
 import { Feed } from '../../../../generated/graphql';
 import { screenModeVar } from '../../../../stores';
 import appTheme from '../../../../styles/constants';
@@ -44,28 +44,28 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
       </NavRow>
 
       <DateText screenMode={screenMode}>
-        {getYear(utcToLocalTime(schedules[0].start_at))}. {getMonth(utcToLocalTime(schedules[0].start_at)) + 1}.{' '}
-        {getDate(utcToLocalTime(schedules[0].start_at))}.
+        {getYear(seoulToLocalTime(schedules[0].start_at))}. {getMonth(seoulToLocalTime(schedules[0].start_at)) + 1}.{' '}
+        {getDate(seoulToLocalTime(schedules[0].start_at))}.
       </DateText>
 
       {schedules.map((item, idx) => (
         <ScheduleRow key={idx} style={{ marginTop: 4 }}>
           <ScheduleText numberOfLines={1} screenMode={screenMode}>
-            {getHours(utcToLocalTime(item.start_at)) < 10
-              ? `0${getHours(utcToLocalTime(item.start_at))}`
-              : getHours(utcToLocalTime(item.start_at))}
+            {getHours(seoulToLocalTime(item.start_at)) < 10
+              ? `0${getHours(seoulToLocalTime(item.start_at))}`
+              : getHours(seoulToLocalTime(item.start_at))}
             :
-            {getMinutes(utcToLocalTime(item.start_at)) < 10
-              ? `0${getMinutes(utcToLocalTime(item.start_at))}`
-              : getMinutes(utcToLocalTime(item.start_at))}{' '}
+            {getMinutes(seoulToLocalTime(item.start_at)) < 10
+              ? `0${getMinutes(seoulToLocalTime(item.start_at))}`
+              : getMinutes(seoulToLocalTime(item.start_at))}{' '}
             -{' '}
-            {getHours(utcToLocalTime(item.finish_at)) < 10
-              ? `0${getHours(utcToLocalTime(item.finish_at))}`
-              : getHours(utcToLocalTime(item.finish_at))}
+            {getHours(seoulToLocalTime(item.finish_at)) < 10
+              ? `0${getHours(seoulToLocalTime(item.finish_at))}`
+              : getHours(seoulToLocalTime(item.finish_at))}
             :
-            {getMinutes(utcToLocalTime(item.finish_at)) < 10
-              ? `0${getMinutes(utcToLocalTime(item.finish_at))}`
-              : getMinutes(utcToLocalTime(item.finish_at))}
+            {getMinutes(seoulToLocalTime(item.finish_at)) < 10
+              ? `0${getMinutes(seoulToLocalTime(item.finish_at))}`
+              : getMinutes(seoulToLocalTime(item.finish_at))}
           </ScheduleText>
           <TitleText screenMode={screenMode} numberOfLines={1}>
             {item.title}

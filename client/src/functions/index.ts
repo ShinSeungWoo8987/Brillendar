@@ -1,7 +1,14 @@
 import { chunkArray, chunkedArrayFillNull } from './chunkArray';
 import { setSecureStore, deleteSecureStore, getSecureStoreValueByKey } from './secureStore';
 import { setupAxiosInterceptors } from './setupAxiosInterceptors';
-import { thousandStr, utcToLocalTime, syncServerRequestTime } from './timeFunctions';
+import {
+  thousandStr,
+  differenceFromSeoul,
+  makeDate,
+  seoulToLocalTime,
+  syncServerRequestTime,
+  fixNewDateError,
+} from './timeFunctions';
 import { uploadResult, uploadProfileImg } from './uploadImage';
 import getKeyboardHeight from './getKeyboardHeight';
 
@@ -13,9 +20,12 @@ export {
   getSecureStoreValueByKey,
   setupAxiosInterceptors,
   thousandStr,
-  utcToLocalTime,
+  seoulToLocalTime,
   syncServerRequestTime,
   uploadResult,
   uploadProfileImg,
   getKeyboardHeight,
+  differenceFromSeoul,
+  makeDate,
+  fixNewDateError,
 };

@@ -11,7 +11,7 @@ import { MainNavProps } from '../../../navigator/Main/MainParamList';
 import { screenModeVar } from '../../../../stores';
 import { Container, HeaderSection, HeaderView, NavItem, TextMode } from '../../../../styles/styled';
 import { addDays, startOfDay } from 'date-fns';
-import { syncServerRequestTime, utcToLocalTime } from '../../../../functions';
+import { syncServerRequestTime, seoulToLocalTime } from '../../../../functions';
 import { useReadFeedScheduleQuery, Feed } from '../../../../generated/graphql';
 import { Feather } from '../../../../styles/vectorIcons';
 
@@ -41,7 +41,7 @@ const FeedScreen: React.FC<FeedScreenProps> = ({ route, navigation }) => {
   const ongoingFeedTemp = data?.readFeedSchedule.feed?.map(
     ({ schedules, member: { id, username, profile_img, follower_count } }) => {
       const ongoingSchedules = schedules.filter(
-        ({ start_at, finish_at }) => utcToLocalTime(start_at) <= now && utcToLocalTime(finish_at) >= now
+        ({ start_at, finish_at }) => seoulToLocalTime(start_at) <= now && seoulToLocalTime(finish_at) >= now
       );
 
       if (ongoingSchedules.length > 0) {

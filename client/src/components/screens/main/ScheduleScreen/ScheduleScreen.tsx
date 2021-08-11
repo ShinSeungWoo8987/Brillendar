@@ -11,11 +11,11 @@ import BlurModal from './BlurModal';
 
 import Header from './Header';
 
-import { startOfMonth, getDate, getDaysInMonth } from 'date-fns';
+import { startOfMonth, getDate, getDaysInMonth, getYear, getMonth } from 'date-fns';
 import { CombinedSchedule, useReadMonthScheduleLazyQuery } from '../../../../generated/graphql';
 import { addMonths } from 'date-fns/esm';
 import DatePicker from '../AddScheduleScreen/DatePicker';
-import { utcToLocalTime, syncServerRequestTime } from '../../../../functions';
+import { seoulToLocalTime, syncServerRequestTime, makeDate, fixNewDateError } from '../../../../functions';
 import { screenModeVar, scheduleModalVar, changeReadScheduleVariablesVar } from '../../../../stores';
 import styled from 'styled-components/native';
 
@@ -30,21 +30,23 @@ const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) =>
   const scheduleModal = useReactiveVar(scheduleModalVar);
 
   const [datepickerOpen, setDatepickerOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const exactDate = () => makeDate(getYear(new Date()), getMonth(new Date()), getDate(new Date()), 0, 0);
+  const [selectedDate, setSelectedDate] = useState(exactDate);
 
   const [readMonthSchedule, { data, loading, error }] = useReadMonthScheduleLazyQuery({ fetchPolicy: 'cache-first' });
 
   useEffect(() => {
     // new Date()는 현재 시간을 지정하므로, 아이디만 바뀌더라도 selectedDate가 바뀌게된다. (시간이 계속 흐르기 때문에)
-    setSelectedDate(new Date());
+    setSelectedDate(exactDate);
   }, [id]);
 
   useEffect(() => {
     // 따라서 여기서 쿼리를 실행시키면된다.
     const readMonthSchedulevariables = {
       id,
-      month_start: Number(syncServerRequestTime(startOfMonth(selectedDate))),
-      month_end: Number(syncServerRequestTime(startOfMonth(addMonths(selectedDate, 1)))),
+      month_start: Number(fixNewDateError(syncServerRequestTime(startOfMonth(selectedDate)))),
+      month_end: Number(fixNewDateError(syncServerRequestTime(startOfMonth(addMonths(selectedDate, 1))))),
     };
 
     readMonthSchedule({ variables: { scheduleRequest: readMonthSchedulevariables } });
@@ -52,10 +54,14 @@ const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) =>
     changeReadScheduleVariablesVar(readMonthSchedulevariables);
   }, [selectedDate]);
 
+  // useEffect(() => {
+  //   console.log(data);
+  // }, [data]);
+
   const scheduleTemp = data?.readMonthSchedule.Schedules?.map((s) => ({
     ...s,
-    start_at: utcToLocalTime(s.start_at),
-    finish_at: utcToLocalTime(s.finish_at),
+    start_at: seoulToLocalTime(s.start_at),
+    finish_at: seoulToLocalTime(s.finish_at),
   }));
 
   /////////////////////////////////////////////////////////////////////////////
@@ -70,7 +76,6 @@ const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) =>
   /////////////////////////////////////////////////////////////////////////////
   if (scheduleTemp) {
     for (let i = 0; i < scheduleTemp.length; i++) {
-      const a = scheduleTemp[i];
       if (scheduleTemp[i]) schedules[scheduleTemp[i].start_at.getDate() - 1].push(scheduleTemp[i] as CombinedSchedule);
     }
   }

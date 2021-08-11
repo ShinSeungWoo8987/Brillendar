@@ -10,12 +10,13 @@ import {
   ActivityIndicator,
   ScrollView,
   KeyboardEvent,
+  Platform,
 } from 'react-native';
 import { Snackbar, Switch } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import DatePicker from './DatePicker';
 import { useFocusEffect } from '@react-navigation/native';
-import { addMonths, compareDesc, getDate, getMonth, getYear, startOfMonth } from 'date-fns';
+import { addMinutes, addMonths, compareDesc, getDate, getMonth, getYear, startOfMonth } from 'date-fns';
 import { MainNavProps } from '../../../navigator/Main/MainParamList';
 import {
   CombinedSchedule,
@@ -36,7 +37,13 @@ import {
   TextMode,
 } from '../../../../styles/styled';
 import produce from 'immer';
-import { getKeyboardHeight, syncServerRequestTime } from '../../../../functions';
+import {
+  differenceFromSeoul,
+  fixNewDateError,
+  getKeyboardHeight,
+  makeDate,
+  syncServerRequestTime,
+} from '../../../../functions';
 
 import { MaterialIcons, MaterialCommunityIcons, Feather } from '../../../../styles/vectorIcons';
 import appTheme, { paddingHorizontal, windowHeight, windowWidth } from '../../../../styles/constants';
@@ -93,13 +100,21 @@ const AddScheduleScreen: React.FC<AddScheduleScreenProps> = ({ navigation, route
     setNewSchedule({ ...newSchedule, tags: newSchedule.tags.filter((tag) => tag !== removeStr) });
   };
 
-  const makeDate = (year: number, month: number, date: number, hour: number, minute: number) => {
-    return new Date(
-      `${year}-${month + 1 < 10 ? `0${month + 1}` : month + 1}-${date < 10 ? `0${date}` : date}T${
-        hour < 10 ? `0${hour}` : hour
-      }:${minute < 10 ? `0${minute}` : minute}:00`
-    );
-  };
+  // const makeDate = (year: number, month: number, date: number, hour: number, minute: number) => {
+  //   return new Date(
+  //     `${year}-${month + 1 < 10 ? `0${month + 1}` : month + 1}-${date < 10 ? `0${date}` : date}T${
+  //       hour < 10 ? `0${hour}` : hour
+  //     }:${minute < 10 ? `0${minute}` : minute}:00`
+  //   );
+  // };
+
+  // new Date()를 찍으면 지멋대로 utc시간으로 변경됨. Date.now()도 마찬가지네..
+  // console.log(`현재시간`, Platform.OS, new Date());
+  // console.log(`현재시간`, Platform.OS, Date.now());
+
+  // 근데 왜 이건 정상으로 찍히지.
+  // console.log(`현재시간`, Platform.OS, getMonth(new Date()) + 1);
+  // console.log(`현재시간`, Platform.OS, new Date().getDate());
 
   const onSubmit = () => {
     if (!startAt.hour || !startAt.minute) {
@@ -147,8 +162,8 @@ const AddScheduleScreen: React.FC<AddScheduleScreenProps> = ({ navigation, route
                 scheduleRequest: {
                   id: data.createSchedule.Schedule.writer_id,
                   // 날짜가 일치한다면, 이미 불러온적이 있다는 의미이므로, 업데이트가 될것임.
-                  month_start: Number(syncServerRequestTime(startOfMonth(date))),
-                  month_end: Number(syncServerRequestTime(startOfMonth(addMonths(date, 1)))),
+                  month_start: Number(fixNewDateError(syncServerRequestTime(startOfMonth(date)))),
+                  month_end: Number(fixNewDateError(syncServerRequestTime(startOfMonth(addMonths(date, 1))))),
                 },
               },
             };
@@ -176,6 +191,7 @@ const AddScheduleScreen: React.FC<AddScheduleScreenProps> = ({ navigation, route
       setStartAt(initTime);
       setFinishAt(initTime);
       setDate(new Date());
+      setTag('');
 
       changeScheduleModal();
       navigation.goBack();
@@ -192,6 +208,7 @@ const AddScheduleScreen: React.FC<AddScheduleScreenProps> = ({ navigation, route
         setStartAt(initTime);
         setFinishAt(initTime);
         setDate(new Date());
+        setTag('');
       };
     }, [])
   );
@@ -488,6 +505,7 @@ const TimeInput = styled.TextInput<ScreenMode>`
 
   font-size: 20px;
   text-align: center;
+  color: ${({ screenMode }) => darkModeToWhite(screenMode)};
 `;
 
 const TimeText = styled(TextMode)`

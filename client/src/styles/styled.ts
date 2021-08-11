@@ -34,6 +34,8 @@ export const Container = styled.View<ScreenMode>`
 `;
 
 export const TextMode = styled.Text<ScreenMode>`
+  flex-direction: row;
+
   color: ${({ screenMode }) => {
     switch (screenMode) {
       case 'dark':

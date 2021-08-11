@@ -1,6 +1,6 @@
 import { BlurView } from 'expo-blur';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { TouchableWithoutFeedback, Button, Text, TouchableOpacity, View } from 'react-native';
+import { TouchableWithoutFeedback, Button, Text, TouchableOpacity, View, Platform } from 'react-native';
 import styled from 'styled-components/native';
 
 import { DayOfTheWeekType } from './calendar/dayOfTheWeek';
@@ -52,79 +52,79 @@ const DatePicker: React.FC<DatePickerProps> = ({ date, setDate, setDatepickerOpe
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => closeModal()}>
-      <ModalContainer intensity={100} style={{ borderWidth: 1 }}>
-        <SelectBox>
-          <CalendarNav>
-            <PlusMonthBtn onPress={() => setTempDate(addMonths(tempDate, -1))}>
-              <MaterialIcons name="arrow-back-ios" size={20} color={COLORS.white} />
-            </PlusMonthBtn>
+    // <TouchableWithoutFeedback onPress={() => closeModal()}>
+    <ModalContainer intensity={100}>
+      <SelectBox>
+        <CalendarNav>
+          <PlusMonthBtn onPress={() => setTempDate(addMonths(tempDate, -1))}>
+            <MaterialIcons name="arrow-back-ios" size={20} color={COLORS.white} />
+          </PlusMonthBtn>
 
-            <DateText>
-              {getYear(tempDate)}. {getMonth(tempDate) + 1 < 10 ? `0${getMonth(tempDate) + 1}` : getMonth(tempDate) + 1}
-            </DateText>
+          <DateText>
+            {getYear(tempDate)}. {getMonth(tempDate) + 1 < 10 ? `0${getMonth(tempDate) + 1}` : getMonth(tempDate) + 1}
+          </DateText>
 
-            <MinusMonthBtn onPress={() => setTempDate(addMonths(tempDate, 1))}>
-              <MaterialIcons
-                name="arrow-forward-ios"
-                size={20}
-                color={COLORS.white}
-                style={{ marginRight: -5, paddingLeft: 5 }}
-              />
-            </MinusMonthBtn>
-          </CalendarNav>
+          <MinusMonthBtn onPress={() => setTempDate(addMonths(tempDate, 1))}>
+            <MaterialIcons
+              name="arrow-forward-ios"
+              size={20}
+              color={COLORS.white}
+              style={{ marginRight: -5, paddingLeft: 5 }}
+            />
+          </MinusMonthBtn>
+        </CalendarNav>
 
-          <Row>
-            {dayOfTheWeekArray.map((d) => (
-              <DayOfTheWeek key={d}>
-                {d === 'Sun' ? (
-                  <SundayText>{d}</SundayText>
-                ) : d === 'Sat' ? (
-                  <SaturdayText>{d}</SaturdayText>
-                ) : (
-                  <DaysOfWeekText>{d}</DaysOfWeekText>
-                )}
-              </DayOfTheWeek>
-            ))}
-          </Row>
-
-          {month.map((week, idx) => (
-            <Row key={idx}>
-              {week.map((day, idx) =>
-                day ? (
-                  <DayItem key={idx} onPress={() => pressDate(day.date)}>
-                    {isSameDay(day.date, new Date()) ? (
-                      <View
-                        style={{
-                          backgroundColor: '#84B44C',
-                          borderRadius: 20,
-                          width: 30,
-                          height: 30,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <WhiteText>{day.day}</WhiteText>
-                      </View>
-                    ) : (
-                      <WhiteText>{day.day}</WhiteText>
-                    )}
-                  </DayItem>
-                ) : (
-                  <DayItemView key={idx} />
-                )
+        <Row>
+          {dayOfTheWeekArray.map((d) => (
+            <DayOfTheWeek key={d}>
+              {d === 'Sun' ? (
+                <SundayText>{d}</SundayText>
+              ) : d === 'Sat' ? (
+                <SaturdayText>{d}</SaturdayText>
+              ) : (
+                <DaysOfWeekText>{d}</DaysOfWeekText>
               )}
-            </Row>
+            </DayOfTheWeek>
           ))}
-        </SelectBox>
+        </Row>
 
-        <Bottom>
-          <CloseBtn onPress={() => closeModal()}>
-            <Feather name="x" size={24} color="#FD8686" />
-          </CloseBtn>
-        </Bottom>
-      </ModalContainer>
-    </TouchableWithoutFeedback>
+        {month.map((week, idx) => (
+          <Row key={idx}>
+            {week.map((day, idx) =>
+              day ? (
+                <DayItem key={idx} onPress={() => pressDate(day.date)}>
+                  {isSameDay(day.date, new Date()) ? (
+                    <View
+                      style={{
+                        backgroundColor: '#84B44C',
+                        borderRadius: 20,
+                        width: 30,
+                        height: 30,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <WhiteText>{day.day}</WhiteText>
+                    </View>
+                  ) : (
+                    <WhiteText>{day.day}</WhiteText>
+                  )}
+                </DayItem>
+              ) : (
+                <DayItemView key={idx} />
+              )
+            )}
+          </Row>
+        ))}
+      </SelectBox>
+
+      <Bottom>
+        <CloseBtn onPress={() => closeModal()}>
+          <Feather name="x" size={24} color="#FD8686" />
+        </CloseBtn>
+      </Bottom>
+    </ModalContainer>
+    // </TouchableWithoutFeedback>
   );
 };
 
@@ -157,8 +157,12 @@ const DayOfTheWeek = styled(CenterView)`
 `;
 
 ///////////
+const AndroidBlurView = styled.View`
+  background-color: ${COLORS.lightGray4};
+  /* background-color: rgba(255, 255, 255, 0.4); */
+`;
 
-const ModalContainer = styled(BlurView)`
+const ModalContainer = styled(Platform.OS !== 'ios' ? AndroidBlurView : BlurView)`
   position: absolute;
   right: 0;
   bottom: 0;

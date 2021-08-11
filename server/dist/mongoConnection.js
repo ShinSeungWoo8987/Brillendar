@@ -11,4 +11,5 @@ exports.default = () => mongoose_1.default.connect(`mongodb+srv://${process.env.
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
 });

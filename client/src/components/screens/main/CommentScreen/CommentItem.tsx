@@ -1,8 +1,8 @@
 import { useReactiveVar } from '@apollo/client';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Platform } from 'react-native';
 import styled from 'styled-components/native';
-import { utcToLocalTime } from '../../../../functions';
+import { seoulToLocalTime, fixNewDateError } from '../../../../functions';
 import { CommentRes, Maybe, Member } from '../../../../generated/graphql';
 import { screenModeVar } from '../../../../stores';
 import { TextMode } from '../../../../styles/styled';
@@ -64,18 +64,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
       <TouchableOpacity onPress={navigateToScheduleScreen}>
         {profile_img ? <ProfileImg source={{ uri: profile_img }} /> : <ProfileView />}
       </TouchableOpacity>
+
       <Right>
         <CommentContent>
-          <TextMode screenMode={screenMode}>
-            <TouchableOpacity style={{ marginTop: -4 }} onPress={navigateToScheduleScreen}>
-              <UsernameText screenMode={screenMode}>{username}</UsernameText>
-            </TouchableOpacity>
+          <TouchableOpacity onPress={navigateToScheduleScreen}>
+            <UsernameText screenMode={screenMode}>{username}</UsernameText>
+          </TouchableOpacity>
 
-            {' ' + description}
-          </TextMode>
+          <CreateAtText>• {differenceTwoDates(new Date(), fixNewDateError(seoulToLocalTime(created_at)))}</CreateAtText>
         </CommentContent>
 
-        <CreateAtText>{differenceTwoDates(new Date(), utcToLocalTime(created_at))}</CreateAtText>
+        <CommentText screenMode={screenMode}>{description}</CommentText>
       </Right>
     </CommentContainer>
   );
@@ -119,16 +118,22 @@ const Right = styled.View`
 
 const CommentContent = styled.View`
   flex-direction: row;
+  align-items: center;
 
   flex-wrap: wrap;
   width: 100%;
 `;
 
 const UsernameText = styled(TextMode)`
-  font-weight: 600;
+  font-weight: ${Platform.OS !== 'ios' ? 700 : 600};
 `;
 
 const CreateAtText = styled(TextMode)`
-  margin-top: 6px;
+  margin-left: 6px;
+
   color: #8f8f8f;
+`;
+
+const CommentText = styled(TextMode)`
+  margin-top: 4px;
 `;

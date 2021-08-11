@@ -33,6 +33,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_count }) => {
   const screenMode = useReactiveVar(screenModeVar);
+  const [profileImg, setProfileImg] = useState(profile_img);
+
+  useEffect(() => {
+    setProfileImg(profile_img);
+  }, [profile_img]);
 
   const [hasGalleryPermission, setHasGalleryPermission] = useState<Boolean | null>(null);
   const [updateProfileImg, {}] = useUpdateProfileImgMutation();
@@ -81,6 +86,7 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
               }),
             });
           }
+          setProfileImg(url);
         }
       },
     });
@@ -305,10 +311,10 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
         <HeaderTab>
           {me ? (
             <TouchableOpacity onPress={handleProfileImg}>
-              {profile_img ? <ProfileImg source={{ uri: profile_img }} /> : <ProfileView />}
+              {profileImg ? <ProfileImg source={{ uri: profileImg }} /> : <ProfileView />}
             </TouchableOpacity>
-          ) : profile_img ? (
-            <ProfileImg source={{ uri: profile_img }} />
+          ) : profileImg ? (
+            <ProfileImg source={{ uri: profileImg }} />
           ) : (
             <ProfileView />
           )}

@@ -41,9 +41,13 @@ export const uploadResult = (mongo_id: string, resultDescription: string, uri: s
       formData.append('file', {
         name: 'untitled.jpg',
         uri: Platform.OS === 'ios' ? uri[i].replace('file://', '') : uri[i],
+        // uri: uri[i].replace('file://', ''),
       });
     }
   }
+
+  // console.log(serverUrl);
+  // console.log(formData);
 
   return axios.put(serverUrl + `/schedule_result`, formData, config);
 };

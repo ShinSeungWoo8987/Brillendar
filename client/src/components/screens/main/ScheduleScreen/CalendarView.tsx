@@ -4,6 +4,7 @@ import { getDate, isSameDay } from 'date-fns';
 import React, { useRef, Dispatch, SetStateAction, useEffect } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import styled from 'styled-components/native';
+import { fixNewDateError } from '../../../../functions';
 import { screenModeVar } from '../../../../stores';
 import appTheme, { paddingHorizontal } from '../../../../styles/constants';
 const { COLORS, FONTS, SIZES, STYLED_FONTS } = appTheme;
@@ -31,7 +32,7 @@ const DayItem: React.FC<DayItemProps> = ({ date, day, formatted, selected, count
       )}
 
       <ShadowBox screenMode={screenMode} style={selected ? {} : shadow}>
-        <DayCard selected={selected} onPress={() => setSelectedDate(date)}>
+        <DayCard selected={selected} onPress={() => setSelectedDate(fixNewDateError(date))}>
           <DateText screenMode={screenMode}>{day}</DateText>
           <CountView>
             {count !== 0 && (
