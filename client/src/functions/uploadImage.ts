@@ -41,6 +41,7 @@ export const uploadResult = (mongo_id: string, resultDescription: string, uri: s
       formData.append('file', {
         name: 'untitled.jpg',
         uri: Platform.OS === 'ios' ? uri[i].replace('file://', '') : uri[i],
+        type: 'image/jpeg',
         // uri: uri[i].replace('file://', ''),
       });
     }
@@ -59,6 +60,7 @@ export const uploadProfileImg = (uri: string) => {
   formData.append('file', {
     name: 'untitled.jpg',
     uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
+    type: 'image/jpeg',
   });
 
   return axios.post(serverUrl + `/profile_img`, formData, config);
