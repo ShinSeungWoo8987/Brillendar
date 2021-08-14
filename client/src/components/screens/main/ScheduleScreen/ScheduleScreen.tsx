@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useReactiveVar } from '@apollo/client';
+import { useApolloClient, useReactiveVar } from '@apollo/client';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-native';
 import { MainNavProps } from '../../../navigator/Main/MainParamList';
 import { Container, darkModeToWhite, TextMode } from '../../../../styles/styled';
 
@@ -11,8 +11,14 @@ import BlurModal from './BlurModal';
 
 import Header from './Header';
 
-import { startOfMonth, getDate, getDaysInMonth, getYear, getMonth } from 'date-fns';
-import { CombinedSchedule, useReadMonthScheduleLazyQuery } from '../../../../generated/graphql';
+import { startOfMonth, getDate, getDaysInMonth, getYear, getMonth, isSameMonth } from 'date-fns';
+import {
+  CombinedSchedule,
+  GetUserDataAndFollowDocument,
+  GetUserDataAndFollowQuery,
+  ScheduleRequest,
+  useReadMonthScheduleLazyQuery,
+} from '../../../../generated/graphql';
 import { addMonths } from 'date-fns/esm';
 import DatePicker from '../AddScheduleScreen/DatePicker';
 import { seoulToLocalTime, syncServerRequestTime, makeDate, fixNewDateError } from '../../../../functions';
@@ -20,12 +26,15 @@ import { screenModeVar, scheduleModalVar, changeReadScheduleVariablesVar } from 
 import styled from 'styled-components/native';
 
 import { Ionicons } from '../../../../styles/vectorIcons';
-import appTheme from '../../../../styles/constants';
+import appTheme, { windowHeight } from '../../../../styles/constants';
+import produce from 'immer';
 const { COLORS, STYLED_FONTS } = appTheme;
 interface ScheduleScreenProps extends MainNavProps<'Schedule'> {}
 
 const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) => {
+  const client = useApolloClient();
   const { id, username, profile_img, follower_count } = route.params;
+
   const screenMode = useReactiveVar(screenModeVar);
   const scheduleModal = useReactiveVar(scheduleModalVar);
 
@@ -33,30 +42,80 @@ const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) =>
 
   const exactDate = () => makeDate(getYear(new Date()), getMonth(new Date()), getDate(new Date()), 0, 0);
   const [selectedDate, setSelectedDate] = useState(exactDate);
-
-  const [readMonthSchedule, { data, loading, error }] = useReadMonthScheduleLazyQuery({ fetchPolicy: 'cache-first' });
+  const [beforeDate, setBeforeDate] = useState(exactDate);
 
   useEffect(() => {
     // new Date()는 현재 시간을 지정하므로, 아이디만 바뀌더라도 selectedDate가 바뀌게된다. (시간이 계속 흐르기 때문에)
     setSelectedDate(exactDate);
   }, [id]);
 
-  useEffect(() => {
-    // 따라서 여기서 쿼리를 실행시키면된다.
-    const readMonthSchedulevariables = {
-      id,
-      month_start: Number(fixNewDateError(syncServerRequestTime(startOfMonth(selectedDate)))),
-      month_end: Number(fixNewDateError(syncServerRequestTime(startOfMonth(addMonths(selectedDate, 1))))),
-    };
+  const readMonthSchedulevariables: ScheduleRequest = {
+    id,
+    month_start: Number(fixNewDateError(syncServerRequestTime(startOfMonth(selectedDate)))),
+    month_end: Number(fixNewDateError(syncServerRequestTime(startOfMonth(addMonths(selectedDate, 1))))),
+  };
 
-    readMonthSchedule({ variables: { scheduleRequest: readMonthSchedulevariables } });
+  const [readMonthSchedule, { data, loading, error }] = useReadMonthScheduleLazyQuery({
+    fetchPolicy: 'network-only',
+    variables: { scheduleRequest: readMonthSchedulevariables },
+  });
+
+  useEffect(() => {
+    readMonthSchedule();
+  }, []);
+
+  useEffect(() => {
+    if (!isSameMonth(beforeDate, selectedDate)) {
+      // 달이 바뀌었을때만 refetch해준다.
+      readMonthSchedule();
+    }
+    setBeforeDate(selectedDate);
 
     changeReadScheduleVariablesVar(readMonthSchedulevariables);
   }, [selectedDate]);
 
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
+  // console.log(typeof data, loading, error);
+
+  const getUserDataAndFollowCache = client.readQuery<GetUserDataAndFollowQuery>({
+    query: GetUserDataAndFollowDocument,
+  });
+
+  const checkMember = getUserDataAndFollowCache?.getUserDataAndFollow.member?.followings.filter(
+    (m) => m.target.id === id
+  );
+
+  if (checkMember && checkMember.length === 1) {
+    if (checkMember[0].relation === 1 && data?.readMonthSchedule.following === true) {
+      // 내 팔로잉 목록에서 요청중이였는데, 새로고침했더니 팔로잉이 되어있네?
+      // 그러면 상대가 팔로잉을 받아준거니까 내 팔로잉 목록에서 relation과 해당 유저 follower_count+1로 업데이트 해주기.
+
+      // 팔로워 목록 업데이트
+      if (getUserDataAndFollowCache?.getUserDataAndFollow) {
+        client.writeQuery<GetUserDataAndFollowQuery>({
+          query: GetUserDataAndFollowDocument,
+          data: produce(getUserDataAndFollowCache, (a) => {
+            if (a && a['getUserDataAndFollow']['member']) {
+              let temp = [...a['getUserDataAndFollow']['member']['followings']];
+
+              const newFollowingList = temp.map((m) => {
+                if (m.target.id === id) {
+                  let changedMember: typeof m = {
+                    ...m,
+                    relation: 2,
+                    target: { ...m.target, follower_count: m.target.follower_count + 1 },
+                  };
+
+                  return changedMember;
+                } else return m;
+              });
+
+              a['getUserDataAndFollow']['member']['followings'] = newFollowingList;
+            }
+          }),
+        });
+      }
+    }
+  }
 
   const scheduleTemp = data?.readMonthSchedule.Schedules?.map((s) => ({
     ...s,
@@ -74,14 +133,13 @@ const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) =>
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  if (scheduleTemp) {
+  if (!loading && scheduleTemp) {
     for (let i = 0; i < scheduleTemp.length; i++) {
       if (scheduleTemp[i]) schedules[scheduleTemp[i].start_at.getDate() - 1].push(scheduleTemp[i] as CombinedSchedule);
     }
-  }
-  /////////////////////////////////////////////////////////////////////////////
 
-  scheduleCount = schedules.map((s) => s.length);
+    scheduleCount = schedules.map((s) => s.length);
+  }
 
   return (
     <Container screenMode={screenMode}>
@@ -95,7 +153,10 @@ const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) =>
       ) : data === undefined || error ? (
         <></>
       ) : data && data.readMonthSchedule.readable ? (
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={readMonthSchedule} />}
+        >
           <CalendarView selectedDate={selectedDate} setSelectedDate={setSelectedDate} scheduleCount={scheduleCount} />
           <ScheduleView
             selectedDate={selectedDate}
@@ -104,18 +165,23 @@ const ScheduleScreen: React.FC<ScheduleScreenProps> = ({ navigation, route }) =>
           />
         </ScrollView>
       ) : (
-        <Center>
-          <CircleBorder screenMode={screenMode}>
-            <Ionicons
-              name={screenMode === 'dark' ? 'ios-lock-closed-sharp' : 'ios-lock-closed-outline'}
-              color={darkModeToWhite(screenMode)}
-              size={36}
-            />
-          </CircleBorder>
+        <ScrollView
+          style={{ flex: 1 }}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={readMonthSchedule} />}
+        >
+          <Center style={{ height: windowHeight - 111 }}>
+            <CircleBorder screenMode={screenMode}>
+              <Ionicons
+                name={screenMode === 'dark' ? 'ios-lock-closed-sharp' : 'ios-lock-closed-outline'}
+                color={darkModeToWhite(screenMode)}
+                size={36}
+              />
+            </CircleBorder>
 
-          <MainText screenMode={screenMode}>비공개 계정</MainText>
-          <SubText screenMode={screenMode}>팔로우하여 스케줄을 확인해보세요.</SubText>
-        </Center>
+            <MainText screenMode={screenMode}>비공개 계정</MainText>
+            <SubText screenMode={screenMode}>팔로우하여 스케줄을 확인해보세요.</SubText>
+          </Center>
+        </ScrollView>
       )}
 
       {datepickerOpen && (

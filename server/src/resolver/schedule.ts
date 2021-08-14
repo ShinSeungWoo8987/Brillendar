@@ -116,6 +116,9 @@ class ScheduleResponse {
 
   @Field(() => Boolean, { nullable: true })
   readable?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  following?: boolean;
 }
 
 @ObjectType()
@@ -197,6 +200,7 @@ export class ScheduleResolver {
     if (error) return { error };
 
     try {
+      let following = false;
       const request_id = payload!.id;
       const target_id = id;
 
@@ -217,6 +221,8 @@ export class ScheduleResolver {
             // 조회가 되었지만, 프라이빗 계정이면 조회 불가능.
             return { readable: false };
           }
+        } else {
+          following = true;
         }
       }
 
@@ -305,7 +311,7 @@ export class ScheduleResolver {
       });
       const final = temp.filter((t) => t !== null) as CombinedSchedule[];
 
-      return { readable: true, Schedules: final };
+      return { readable: true, Schedules: final, following };
     } catch (err) {
       console.log(err);
       return { error: { field: '', message: '' } };

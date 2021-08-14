@@ -16,7 +16,7 @@ type ClientMember = {
   username: string;
   profile_img?: Maybe<string> | undefined;
 
-  follower_count?: number;
+  follower_count: number;
 };
 
 type OngoingFeed = {

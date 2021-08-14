@@ -1,5 +1,5 @@
-import React from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
 import styled from 'styled-components/native';
 
 import OngoingScheduleItem from './OngoingScheduleItem';
@@ -11,11 +11,12 @@ import { MainNavProps } from '../../../navigator/Main/MainParamList';
 import { screenModeVar } from '../../../../stores';
 import { Container, HeaderSection, HeaderView, NavItem, TextMode } from '../../../../styles/styled';
 import { addDays, startOfDay } from 'date-fns';
-import { syncServerRequestTime, seoulToLocalTime } from '../../../../functions';
-import { useReadFeedScheduleQuery, Feed } from '../../../../generated/graphql';
+import { syncServerRequestTime, seoulToLocalTime, fixNewDateError } from '../../../../functions';
+import { useReadFeedScheduleQuery, Feed, useReadFeedScheduleLazyQuery } from '../../../../generated/graphql';
 import { Feather } from '../../../../styles/vectorIcons';
 
-import appTheme from '../../../../styles/constants';
+import appTheme, { windowHeight } from '../../../../styles/constants';
+
 const { COLORS, FONTS, SIZES, STYLED_FONTS } = appTheme;
 
 interface FeedScreenProps extends MainNavProps<'Feed'> {}
@@ -25,15 +26,29 @@ const FeedScreen: React.FC<FeedScreenProps> = ({ route, navigation }) => {
 
   const now = new Date();
 
-  const { data, loading, error } = useReadFeedScheduleQuery({
-    fetchPolicy: 'cache-first',
+  // const { data, loading, error } = useReadFeedScheduleQuery({
+  //   fetchPolicy: 'cache-first',
+  //   variables: {
+  //     feedInput: {
+  //       day_start: Number(fixNewDateError(syncServerRequestTime(startOfDay(now)))),
+  //       day_end: Number(fixNewDateError(syncServerRequestTime(startOfDay(addDays(now, 1))))),
+  //     },
+  //   },
+  // });
+
+  const [readFeedSchedule, { data, loading, error }] = useReadFeedScheduleLazyQuery({
+    fetchPolicy: 'network-only',
     variables: {
       feedInput: {
-        day_start: Number(syncServerRequestTime(startOfDay(now))),
-        day_end: Number(syncServerRequestTime(startOfDay(addDays(now, 1)))),
+        day_start: Number(fixNewDateError(syncServerRequestTime(startOfDay(now)))),
+        day_end: Number(fixNewDateError(syncServerRequestTime(startOfDay(addDays(now, 1))))),
       },
     },
   });
+
+  useEffect(() => {
+    readFeedSchedule();
+  }, []);
 
   // console.log(data?.readFeedSchedule.error);
   // console.log(data?.readFeedSchedule.feed);
@@ -55,13 +70,27 @@ const FeedScreen: React.FC<FeedScreenProps> = ({ route, navigation }) => {
 
   const ongoingFeed = ongoingFeedTemp?.filter((f) => f !== null) as OngoingFeed[];
 
-  const errorScreen = <TextMode>잠시후에 다시 시도해주세요.</TextMode>;
+  const errorScreen = (
+    <ScrollView
+      style={{ flex: 1 }}
+      refreshControl={<RefreshControl refreshing={loading} onRefresh={readFeedSchedule} />}
+    >
+      <Center style={{ height: windowHeight - 111 }}>
+        <AlertText screenMode={screenMode}>잠시후에 다시 시도해주세요.</AlertText>
+      </Center>
+    </ScrollView>
+  );
 
   const noFeedScreen = (
-    <Center>
-      <AlertText screenMode={screenMode}>표시할 스케줄이 없습니다.</AlertText>
-      <AlertText screenMode={screenMode}>다른 사용자를 팔로우해보세요.</AlertText>
-    </Center>
+    <ScrollView
+      style={{ flex: 1 }}
+      refreshControl={<RefreshControl refreshing={loading} onRefresh={readFeedSchedule} />}
+    >
+      <Center style={{ height: windowHeight - 111 }}>
+        <AlertText screenMode={screenMode}>표시할 스케줄이 없습니다.</AlertText>
+        <AlertText screenMode={screenMode}>다른 사용자를 팔로우해보세요.</AlertText>
+      </Center>
+    </ScrollView>
   );
 
   return (
@@ -80,7 +109,10 @@ const FeedScreen: React.FC<FeedScreenProps> = ({ route, navigation }) => {
       ) : data && data.readFeedSchedule.feed?.length === 0 ? (
         noFeedScreen
       ) : (
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={readFeedSchedule} />}
+        >
           <OngoingSchedule screenMode={screenMode} horizontal={true}>
             {ongoingFeed.length !== 0 ? (
               ongoingFeed.map(({ id, username, profile_img, follower_count, title }) => (

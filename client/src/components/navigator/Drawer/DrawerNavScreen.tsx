@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styled from 'styled-components/native';
-import { View, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { View, TouchableOpacity, Dimensions, Alert, RefreshControl } from 'react-native';
 import produce from 'immer';
 import * as ImagePicker from 'expo-image-picker';
 import { useReactiveVar } from '@apollo/client';
@@ -15,6 +15,7 @@ import {
   GetUserDataAndFollowQuery,
   Maybe,
   useChangePrivateAccountMutation,
+  useGetUserDataAndFollowLazyQuery,
   useGetUserDataAndFollowQuery,
   useUpdateProfileImgMutation,
 } from '../../../generated/graphql';
@@ -42,8 +43,15 @@ const DrawerNavScreen: React.FC<DrawerNavScreenProps> = ({ state, descriptors, s
   const [isPrivateAccount, setIsPrivateAccount] = useState(false);
   const [followRequest, setFollowRequest] = useState<ClientMember[]>([]);
 
-  const { error, loading, data } = useGetUserDataAndFollowQuery();
-  const [changePrivateAccount, changePrivateAccountRes] = useChangePrivateAccountMutation();
+  const [getUserDataAndFollow, { error, loading, data }] = useGetUserDataAndFollowLazyQuery({
+    fetchPolicy: 'network-only',
+  });
+
+  const [changePrivateAccount] = useChangePrivateAccountMutation();
+
+  useEffect(() => {
+    getUserDataAndFollow();
+  }, []);
 
   useEffect(() => {
     if (data && data.getUserDataAndFollow.member) {
@@ -178,7 +186,10 @@ const DrawerNavScreen: React.FC<DrawerNavScreenProps> = ({ state, descriptors, s
             {data?.getUserDataAndFollow.error || error || loading ? (
               <LoadingScreen />
             ) : (
-              <Scroll style={{ height: windowHeight - 280 }}>
+              <Scroll
+                style={{ height: windowHeight - 280 }}
+                refreshControl={<RefreshControl refreshing={loading} onRefresh={getUserDataAndFollow} />}
+              >
                 {followRequest.length !== 0 &&
                   followRequest.map((member) => <RequestItem key={member.id} {...member} navigation={navigation} />)}
               </Scroll>

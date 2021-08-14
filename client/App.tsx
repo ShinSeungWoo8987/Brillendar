@@ -80,7 +80,6 @@ const App: React.FC = () => {
   }, [accessToken]);
 
   const client = new ApolloClient({
-    // uri: 'http://localhost:5000/graphql',
     uri: serverUrl + '/graphql',
 
     credentials: 'include',

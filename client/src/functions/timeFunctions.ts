@@ -30,6 +30,10 @@ export const seoulToLocalTime = (date: string) => {
   const minuteNum = Number(_time[1]);
 
   const tempDate = new Date(yearNum, monthNum - 1, dateNum, hourNum, minuteNum);
+  // const tempDate = new Date(Date.UTC(yearNum, monthNum, dateNum, hourNum, minuteNum));
+
+  // console.log('tempDate', tempDate);
+  // console.log(yearNum, monthNum - 1, dateNum, hourNum, minuteNum);
 
   const localDate = addMinutes(tempDate, differenceFromSeoul());
 

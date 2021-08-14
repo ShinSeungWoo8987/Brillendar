@@ -35,3 +35,9 @@ yarn-error.log*
 .vercel
 
 ormconfig.json
+
+server/src/resolver/test.ts
+server/dist/resolver/test.js
+
+client/app.json
+client/env.ts

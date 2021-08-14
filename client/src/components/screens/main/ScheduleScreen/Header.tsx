@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { useReactiveVar } from '@apollo/client';
+import { useApolloClient, useReactiveVar } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 
@@ -25,13 +25,14 @@ import appTheme from '../../../../styles/constants';
 const { COLORS, STYLED_FONTS } = appTheme;
 
 interface HeaderProps {
-  id?: string | null;
-  username?: string | null;
-  profile_img?: string | null;
-  follower_count?: number | null;
+  id?: string;
+  username?: string;
+  profile_img?: string;
+  follower_count?: number;
 }
 
 const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_count }) => {
+  const client = useApolloClient();
   const screenMode = useReactiveVar(screenModeVar);
   const [profileImg, setProfileImg] = useState(profile_img);
 
@@ -45,11 +46,28 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
   const { data } = useGetUserDataAndFollowQuery({ fetchPolicy: 'cache-only' });
   const [requestFollow] = useRequestFollowMutation();
   const [requestUnFollow] = useRequestUnFollowMutation();
-  const [getFollowerCnt, getFollowerCntRes] = useGetFollowerCountLazyQuery();
 
   const [followerCnt, setFollowerCnt] = useState(0);
 
   const me = id === data?.getUserDataAndFollow.member?.id;
+
+  //
+  const getUserDataAndFollowCache = client.readQuery<GetUserDataAndFollowQuery>({
+    query: GetUserDataAndFollowDocument,
+  });
+
+  const checkMember = getUserDataAndFollowCache?.getUserDataAndFollow.member?.followings.filter(
+    (m) => m.target.id === id
+  );
+
+  useEffect(() => {
+    // 팔로우 요청-> 상대가 받아줌->새로고침->팔로우 업데이트됨.
+    if (checkMember && checkMember.length === 1) {
+      setFollowerCnt(checkMember[0].target.follower_count);
+    }
+  }, [getUserDataAndFollowCache]);
+
+  //
 
   useEffect(() => {
     if (me) {
@@ -60,10 +78,6 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
     } else {
       setFollowerCnt(follower_count!);
     }
-    // if (!me && id && !follower_count) {
-    //   // 다른사람 팔로워 수 가져오기
-    //   getFollowerCnt({ variables: { id } });
-    // }
   }, [id]);
 
   const sendProfileImgMutation = (url?: string) =>
@@ -133,7 +147,7 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
     })();
   };
 
-  const onUnFollow = () => {
+  const onUnFollow = (isFollowRequest: boolean = false) => {
     if (id) {
       requestUnFollow({
         variables: { id },
@@ -141,22 +155,26 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
           // requestUnFollow가 true면, 팔로우 취소됨
           if (data?.requestUnFollow) {
             // 팔로워 수 변경
-            setFollowerCnt(followerCnt - 1);
-            const getFollowerCountCache = store.readQuery<GetFollowerCountQuery>({
-              query: GetFollowerCountDocument,
-              variables: { id },
-            });
+            if (!isFollowRequest) {
+              setFollowerCnt(followerCnt - 1);
 
-            if (getFollowerCountCache?.getFollowerCount) {
-              store.writeQuery<GetFollowerCountQuery>({
+              //
+              const getFollowerCountCache = store.readQuery<GetFollowerCountQuery>({
                 query: GetFollowerCountDocument,
                 variables: { id },
-                data: produce(getFollowerCountCache, (x) => {
-                  if (x) {
-                    x['getFollowerCount'] -= 1;
-                  }
-                }),
               });
+
+              if (getFollowerCountCache?.getFollowerCount) {
+                store.writeQuery<GetFollowerCountQuery>({
+                  query: GetFollowerCountDocument,
+                  variables: { id },
+                  data: produce(getFollowerCountCache, (x) => {
+                    if (x) {
+                      x['getFollowerCount'] -= 1;
+                    }
+                  }),
+                });
+              }
             }
 
             // 팔로잉 목록에서 제거
@@ -197,22 +215,6 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
             if (data.requestFollow === 2) {
               // 팔로워 수 변경
               setFollowerCnt(newFollowerCnt);
-              const getFollowerCountCache = store.readQuery<GetFollowerCountQuery>({
-                query: GetFollowerCountDocument,
-                variables: { id },
-              });
-
-              if (getFollowerCountCache?.getFollowerCount) {
-                store.writeQuery<GetFollowerCountQuery>({
-                  query: GetFollowerCountDocument,
-                  variables: { id },
-                  data: produce(getFollowerCountCache, (x) => {
-                    if (x) {
-                      x['getFollowerCount'] += 1;
-                    }
-                  }),
-                });
-              }
             }
 
             // 팔로워 목록에 추가
@@ -276,7 +278,7 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
 
     case 1:
       followBtn = (
-        <FollowBtn onPress={() => onUnFollow()}>
+        <FollowBtn onPress={() => onUnFollow(true)}>
           <MaterialCommunityIcons
             name="heart-half-full"
             size={16}
@@ -296,14 +298,6 @@ const Header: React.FC<HeaderProps> = ({ id, username, profile_img, follower_cou
   }
 
   // //////////////
-
-  let otherFollowerCnt = follower_count ? follower_count : 0;
-  if (getFollowerCntRes.data && !getFollowerCntRes.error) {
-    // getFollowerCntRes.data.getFollowerCnt.count가 0인경우에 client에서 apollo가 업데이트를 안함. 왜이러는거야?
-    // 서버에서 +1해서 보내주고, 클라이언트에서 받아서 -1처리 해준뒤 사용함.
-    // 대체 이걸로 몇시간을 날린거야. 스트레스받는다. 햄버거먹어야지.
-    otherFollowerCnt = getFollowerCntRes.data.getFollowerCount! - 1;
-  }
 
   return (
     <Wrapper screenMode={screenMode}>

@@ -102,25 +102,6 @@ export type Follow = {
   relation: Scalars['Float'];
 };
 
-export type Introduce = {
-  __typename?: 'Introduce';
-  id: Scalars['String'];
-  field: Scalars['String'];
-  content: Scalars['String'];
-};
-
-export type IntroduceInput = {
-  field: Scalars['String'];
-  content: Scalars['String'];
-};
-
-export type IntroduceResponse = {
-  __typename?: 'IntroduceResponse';
-  error?: Maybe<FieldError>;
-  introduce?: Maybe<Introduce>;
-  introduces?: Maybe<Array<Introduce>>;
-};
-
 export type Like = {
   __typename?: 'Like';
   member_id: Scalars['String'];
@@ -163,19 +144,10 @@ export type MemberResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createProject: ProjectResponse;
-  updateProject: ProjectResponse;
-  deleteProject: Scalars['Boolean'];
-  createIntroduce: IntroduceResponse;
-  updateIntroduce: IntroduceResponse;
   login: MemberResponse;
   changePrivateAccount: Scalars['Boolean'];
   updateProfileImg: Scalars['Boolean'];
   leaveMember: Scalars['Boolean'];
-  test: Scalars['String'];
-  putUsers: Scalars['String'];
-  test1: Scalars['String'];
-  test3: Scalars['String'];
   createSchedule: ScheduleResponse;
   deleteScheduleResult: Scalars['Boolean'];
   deleteSchedule: Scalars['Boolean'];
@@ -191,36 +163,6 @@ export type Mutation = {
   phoneValidation: RegisterResponse;
   verifyPhone: RegisterResponse;
   createMember: RegisterResponse;
-};
-
-export type MutationCreateProjectArgs = {
-  project_img: Array<ProjectImgInput>;
-  database: Array<Scalars['String']>;
-  cloud: Array<Scalars['String']>;
-  back_end: Array<Scalars['String']>;
-  front_end: Array<Scalars['String']>;
-  project: ProjectInput;
-};
-
-export type MutationUpdateProjectArgs = {
-  project_img: Array<ProjectImgInput>;
-  database: Array<Scalars['String']>;
-  cloud: Array<Scalars['String']>;
-  back_end: Array<Scalars['String']>;
-  front_end: Array<Scalars['String']>;
-  project: UpdateProjectInput;
-};
-
-export type MutationDeleteProjectArgs = {
-  id: Scalars['String'];
-};
-
-export type MutationCreateIntroduceArgs = {
-  introduce: IntroduceInput;
-};
-
-export type MutationUpdateIntroduceArgs = {
-  introduce: UpdateIntroduceInput;
 };
 
 export type MutationLoginArgs = {
@@ -302,79 +244,19 @@ export type MutationCreateMemberArgs = {
   register: RegisterInput;
 };
 
-export type Project = {
-  __typename?: 'Project';
-  id: Scalars['String'];
-  title: Scalars['String'];
-  subtitle: Scalars['String'];
-  background_up_color: Scalars['String'];
-  background_down_color: Scalars['String'];
-  line_color: Scalars['String'];
-  font_color: Scalars['String'];
-  platform: Scalars['String'];
-  domain: Scalars['String'];
-  func: Scalars['String'];
-  github: Scalars['String'];
-  front_end: Array<Scalars['String']>;
-  back_end: Array<Scalars['String']>;
-  database: Array<Scalars['String']>;
-  cloud: Array<Scalars['String']>;
-  project_img: Array<ProjectImg>;
-};
-
-export type ProjectImg = {
-  __typename?: 'ProjectImg';
-  order: Scalars['Int'];
-  url: Scalars['String'];
-};
-
-export type ProjectImgInput = {
-  order: Scalars['Int'];
-  url: Scalars['String'];
-};
-
-export type ProjectInput = {
-  title: Scalars['String'];
-  subtitle: Scalars['String'];
-  platform: Scalars['String'];
-  domain: Scalars['String'];
-  func: Scalars['String'];
-  github: Scalars['String'];
-  background_up_color: Scalars['String'];
-  background_down_color: Scalars['String'];
-  line_color: Scalars['String'];
-  font_color: Scalars['String'];
-};
-
-export type ProjectResponse = {
-  __typename?: 'ProjectResponse';
-  error?: Maybe<FieldError>;
-  project?: Maybe<Project>;
-  projects?: Maybe<Array<Project>>;
-};
-
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
-  hi: Scalars['String'];
-  projects: ProjectResponse;
-  introduce: IntroduceResponse;
   getUserDataAndFollow: MemberResponse;
   searchMember: Array<Member>;
   getScheduleScreenData: MemberResponse;
   getFollowerCount: Scalars['Float'];
-  test2: Scalars['String'];
-  aaaaa: TestResponse;
   readMonthSchedule: ScheduleResponse;
   readFeedSchedule: FeedResponse;
   getLikeMembers: LikeResponse;
   getLikeSchedules: Scalars['String'];
   readComment: CommentResponseType;
   availableUsername: RegisterResponse;
-};
-
-export type QueryHiArgs = {
-  hi: Scalars['String'];
 };
 
 export type QuerySearchMemberArgs = {
@@ -386,10 +268,6 @@ export type QueryGetScheduleScreenDataArgs = {
 };
 
 export type QueryGetFollowerCountArgs = {
-  id: Scalars['String'];
-};
-
-export type QueryTest2Args = {
   id: Scalars['String'];
 };
 
@@ -467,6 +345,7 @@ export type ScheduleResponse = {
   Schedule?: Maybe<Schedule>;
   Schedules?: Maybe<Array<CombinedSchedule>>;
   readable?: Maybe<Scalars['Boolean']>;
+  following?: Maybe<Scalars['Boolean']>;
 };
 
 export type Tag = {
@@ -475,33 +354,6 @@ export type Tag = {
   schedule?: Schedule;
   tag: Scalars['String'];
   idx: Scalars['Float'];
-};
-
-export type TestResponse = {
-  __typename?: 'TestResponse';
-  error?: Maybe<FieldError>;
-  member?: Maybe<Member>;
-  accessToken?: Maybe<Scalars['String']>;
-};
-
-export type UpdateIntroduceInput = {
-  field: Scalars['String'];
-  content: Scalars['String'];
-  id: Scalars['String'];
-};
-
-export type UpdateProjectInput = {
-  title: Scalars['String'];
-  subtitle: Scalars['String'];
-  platform: Scalars['String'];
-  domain: Scalars['String'];
-  func: Scalars['String'];
-  github: Scalars['String'];
-  background_up_color: Scalars['String'];
-  background_down_color: Scalars['String'];
-  line_color: Scalars['String'];
-  font_color: Scalars['String'];
-  id: Scalars['String'];
 };
 
 export type AcceptFollowMutationVariables = Exact<{
@@ -721,12 +573,6 @@ export type HelloQueryVariables = Exact<{ [key: string]: never }>;
 
 export type HelloQuery = { __typename?: 'Query' } & Pick<Query, 'hello'>;
 
-export type HiQueryVariables = Exact<{
-  testString: Scalars['String'];
-}>;
-
-export type HiQuery = { __typename?: 'Query' } & Pick<Query, 'hi'>;
-
 export type ReadCommentQueryVariables = Exact<{
   mongo_id: Scalars['String'];
 }>;
@@ -790,7 +636,7 @@ export type ReadMonthScheduleQueryVariables = Exact<{
 }>;
 
 export type ReadMonthScheduleQuery = { __typename?: 'Query' } & {
-  readMonthSchedule: { __typename?: 'ScheduleResponse' } & Pick<ScheduleResponse, 'readable'> & {
+  readMonthSchedule: { __typename?: 'ScheduleResponse' } & Pick<ScheduleResponse, 'readable' | 'following'> & {
       error?: Maybe<{ __typename?: 'FieldError' } & Pick<FieldError, 'field' | 'message'>>;
       Schedules?: Maybe<
         Array<
@@ -1834,39 +1680,6 @@ export function useHelloLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Hell
 export type HelloQueryHookResult = ReturnType<typeof useHelloQuery>;
 export type HelloLazyQueryHookResult = ReturnType<typeof useHelloLazyQuery>;
 export type HelloQueryResult = Apollo.QueryResult<HelloQuery, HelloQueryVariables>;
-export const HiDocument = gql`
-  query Hi($testString: String!) {
-    hi(hi: $testString)
-  }
-`;
-
-/**
- * __useHiQuery__
- *
- * To run a query within a React component, call `useHiQuery` and pass it any options that fit your needs.
- * When your component renders, `useHiQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useHiQuery({
- *   variables: {
- *      testString: // value for 'testString'
- *   },
- * });
- */
-export function useHiQuery(baseOptions: Apollo.QueryHookOptions<HiQuery, HiQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<HiQuery, HiQueryVariables>(HiDocument, options);
-}
-export function useHiLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HiQuery, HiQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<HiQuery, HiQueryVariables>(HiDocument, options);
-}
-export type HiQueryHookResult = ReturnType<typeof useHiQuery>;
-export type HiLazyQueryHookResult = ReturnType<typeof useHiLazyQuery>;
-export type HiQueryResult = Apollo.QueryResult<HiQuery, HiQueryVariables>;
 export const ReadCommentDocument = gql`
   query ReadComment($mongo_id: String!) {
     readComment(mongo_id: $mongo_id) {
@@ -2000,6 +1813,7 @@ export const ReadMonthScheduleDocument = gql`
         message
       }
       readable
+      following
       Schedules {
         id
         title

@@ -5,6 +5,7 @@ query ReadMonthSchedule($scheduleRequest: ScheduleRequest!) {
       message
     }
     readable
+    following
     Schedules {
       id
       title

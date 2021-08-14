@@ -77,6 +77,11 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
       if (userInput[key].length === 0) count++;
     });
 
+    if (userInput.username.length < 6) {
+      Alert.alert('Nickname', '6자리 이상의 Nickname을 입력해주세요.');
+      return false;
+    }
+
     if (count !== 0) {
       Alert.alert('Register', '빈칸을 모두 채워주세요.');
       return false;

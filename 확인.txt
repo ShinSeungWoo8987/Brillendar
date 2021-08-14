@@ -1,3 +1,10 @@
+*****
+가장중요!
+aws서버에 올렸을때와, 로컬에서 서버를 돌릴때 시간에서 차이가 있음.
+클라이언트에서 스케줄시간대가 바뀌어서 가져와지기때문에, 오류가 생길수있다.
+확인안하고 막 고치면 다음에 더 꼬여서 도저히 찾을수가없어짐..
+*****
+
 ************************************
 development / production mode 변경시 바꿔야 할 것.
 client/env.ts
@@ -71,12 +78,16 @@ END; //
 DELIMITER ;
 
 
+DELIMITER //
 CREATE TRIGGER follow_after_delete_trigger
     AFTER DELETE ON `follow`
     FOR EACH ROW
-UPDATE `member`
-SET follower_count = follower_count-1
-WHERE id=OLD.target_id;
+BEGIN
+    IF OLD.relation = 2 THEN
+        UPDATE `member` SET follower_count = follower_count-1 WHERE id=OLD.target_id;
+	END IF;
+END; //
+DELIMITER ;
 -- --------------------------------------------------------------------------
 
 // 트리거 확인
@@ -99,3 +110,18 @@ export type Tag = {
 
 export type CombinedSchedule
 에서 likes, writer에 ?붙여주기 ( === undefined도 가능하도록 )
+
+
+
+******************************************************************************************************
+yarn gen 이후
+export type Tag = {
+  __typename?: 'Tag';
+  schedule_id?: Scalars['String'];
+  schedule?: Schedule;
+  tag: Scalars['String'];
+  idx: Scalars['Float'];
+};
+
+export type CombinedSchedule
+에서 likes, writer ? 처리 해줘야함.
