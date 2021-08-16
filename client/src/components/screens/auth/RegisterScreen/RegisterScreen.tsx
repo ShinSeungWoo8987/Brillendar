@@ -286,12 +286,12 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
                 let filteredUsername = username.toLowerCase();
                 filteredUsername = filteredUsername.replace(pattern, '');
 
+                setUserInput({ ...userInput, username: filteredUsername });
+
                 if (filteredUsername.length === 0) setUsernameError(false);
                 else if (filteredUsername.length < 6) setUsernameError(true);
                 else if (filteredUsername.length >= 6)
                   isAvailableUsername({ variables: { username: filteredUsername } });
-
-                setUserInput({ ...userInput, username: filteredUsername });
               }}
               render={(props) => <TextInput {...props} style={TextInputStyle} />}
             />
