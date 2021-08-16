@@ -283,6 +283,7 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
               mode="outlined"
               value={userInput.username}
               onChangeText={(username) => {
+                if (username.length > 16) return false;
                 let filteredUsername = username.toLowerCase();
                 filteredUsername = filteredUsername.replace(pattern, '');
 
