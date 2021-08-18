@@ -34,7 +34,7 @@ _italic_
 
 [Click](http://www.longforyoustudio.com)
 
-<img alt="Image description" width="300px" src="https://longforyoustudio.s3.ap-northeast-2.amazonaws.com/information/background-video.mp4" />
+<img alt="Image description" width="300px" src="https://raw.githubusercontent.com/ShinSeungWoo8987/Brillendar/main/readme/logo/Express.png" />
 
 | Header | Description |
 | :----: | :---------: |
