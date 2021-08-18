@@ -47,17 +47,21 @@
 ### 주요기능
 
 - Auth
+
   - 로그인
   - 회원가입
     - 이메일 인증
     - 핸드폰 인증 (NCP SMS)
-- Follow System
+
+- Follow
+
   - 팔로우 / 언팔로우
   - 팔로워 / 팔로잉 목록
   - 비공개 계정 설정
   - 팔로우 요청
   - 팔로우 수락
-- Schedule System
+
+- Schedule
   - 일정등록
   - 공개범위 설정 (나만보기)
   - 결과등록 (이미지 업로드
@@ -313,7 +317,7 @@
 
 회원검색
 
-<img width="240px" src="https://raw.githubusercontent.com/ShinSeungWoo8987/Brillendar/main/readme/img/dark- 회원검색.jpg" />
+<img width="240px" src="https://raw.githubusercontent.com/ShinSeungWoo8987/Brillendar/main/readme/img/dark-회원검색.jpg" />
 
 <br/>
 
