@@ -1,6 +1,10 @@
+<img width="180px" src="https://raw.githubusercontent.com/ShinSeungWoo8987/Brillendar/main/client/assets/icon.png" />
+
 ## **Brillendar**
 
 ### React Native Schedule SNS Application.
+
+[안드로이드 APK](https://github.com/ShinSeungWoo8987/Brillendar/raw/main/Brillendar.apk)
 
 ---
 
