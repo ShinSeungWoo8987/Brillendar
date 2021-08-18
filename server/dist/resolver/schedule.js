@@ -185,6 +185,10 @@ __decorate([
     type_graphql_1.Field(() => Boolean, { nullable: true }),
     __metadata("design:type", Boolean)
 ], ScheduleResponse.prototype, "readable", void 0);
+__decorate([
+    type_graphql_1.Field(() => Boolean, { nullable: true }),
+    __metadata("design:type", Boolean)
+], ScheduleResponse.prototype, "following", void 0);
 ScheduleResponse = __decorate([
     type_graphql_1.ObjectType()
 ], ScheduleResponse);
@@ -256,6 +260,7 @@ let ScheduleResolver = class ScheduleResolver {
             if (error)
                 return { error };
             try {
+                let following = false;
                 const request_id = payload.id;
                 const target_id = id;
                 if (request_id !== target_id) {
@@ -272,6 +277,9 @@ let ScheduleResolver = class ScheduleResolver {
                             // 조회가 되었지만, 프라이빗 계정이면 조회 불가능.
                             return { readable: false };
                         }
+                    }
+                    else {
+                        following = true;
                     }
                 }
                 // 여기까지 걸리는게 없으면 스케줄 조회 가능
@@ -336,7 +344,7 @@ let ScheduleResolver = class ScheduleResolver {
                     }
                 });
                 const final = temp.filter((t) => t !== null);
-                return { readable: true, Schedules: final };
+                return { readable: true, Schedules: final, following };
             }
             catch (err) {
                 console.log(err);
