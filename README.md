@@ -79,8 +79,7 @@
 
 ### Screen
 
-<details>
-  <summary>Light Mode</summary>
+Light Mode
 
 로그인
 
@@ -258,10 +257,7 @@
 
 <br/>
 
-</details>
-
-<details>
-  <summary>Dark Mode</summary>
+Dark Mode
 
 피드
 
@@ -342,5 +338,3 @@
 <br/>
 
 <br/>
-
-</details>
