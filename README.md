@@ -26,6 +26,8 @@
 
 - GraphQL
 
+- Redis
+
 <br/>
 
 ### Database
